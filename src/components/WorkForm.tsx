@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import type { Work } from '../types';
 import { CoverPicker } from './CoverPicker';
+import { ThemePicker } from './ThemePicker';
+import { guessTheme } from '../themes';
 
-export interface WorkFields { title: string; subtitle: string; author: string; fandom: string; summary: string; tags: string; status: string; cover: string | null }
+export interface WorkFields { title: string; subtitle: string; author: string; fandom: string; summary: string; tags: string; status: string; theme: string; cover: string | null }
 
 export const workToFields = (w?: Partial<Work>): WorkFields => ({
   title: w?.title || '', subtitle: w?.subtitle || '', author: w?.author || '', fandom: w?.fandom || '',
-  summary: w?.summary || '', tags: (w?.tags || []).join(', '), status: w?.status || 'en cours', cover: w?.cover || null,
+  summary: w?.summary || '', tags: (w?.tags || []).join(', '), status: w?.status || 'en cours', theme: w?.theme || '', cover: w?.cover || null,
 });
 
 export const fieldsToPayload = (f: WorkFields, original?: string | null) => ({
   title: f.title.trim() || 'Sans titre', subtitle: f.subtitle.trim(), author: f.author.trim(), fandom: f.fandom.trim(),
-  summary: f.summary.trim(), status: f.status, tags: f.tags.split(',').map((t) => t.trim()).filter(Boolean),
+  summary: f.summary.trim(), status: f.status, theme: f.theme, tags: f.tags.split(',').map((t) => t.trim()).filter(Boolean),
   ...(f.cover && f.cover.startsWith('data:') ? { coverDataUrl: f.cover } : {}),
   ...(!f.cover && original ? { removeCover: true } : {}),
 });
@@ -27,6 +29,7 @@ export function WorkFieldsEditor({ value, onChange }: { value: WorkFields; onCha
       <label className="span2">Résumé<textarea rows={4} value={value.summary} onChange={set('summary')} placeholder="Le texte de la quatrième de couverture" /></label>
       <label>Tags<input value={value.tags} onChange={set('tags')} placeholder="action, romance, post-apo" /></label>
       <label>Statut<select value={value.status} onChange={set('status')}><option value="en cours">En cours</option><option value="terminée">Terminée</option><option value="en pause">En pause</option></select></label>
+      <div className="span2"><ThemePicker value={value.theme} guessed={guessTheme(value.fandom, value.title, value.tags)} onChange={(theme) => onChange({ ...value, theme })} /></div>
       <div className="span2"><CoverPicker value={value.cover} onChange={(cover) => onChange({ ...value, cover })} label="Couverture de l’œuvre" /></div>
     </div>
   );

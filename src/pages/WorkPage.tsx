@@ -7,6 +7,7 @@ import { Book } from '../components/Book';
 import { CoverPicker } from '../components/CoverPicker';
 import { WorkEditDialog } from '../components/WorkForm';
 import { toRoman } from '../import/structure';
+import { applyDocumentTheme, resolveTheme, themeTitle } from '../themes';
 
 const progressOf = (id: string): { page: number; total: number } | null => {
   try { const v = JSON.parse(localStorage.getItem(`dreamy:progress:${id}`) || 'null'); return v && v.total ? v : null; } catch { return null; }
@@ -25,6 +26,13 @@ export function WorkPage() {
   const load = useCallback(() => api.work(id).then(setWork).catch((e) => setError(e.message)), [id]);
   useEffect(() => { load(); }, [load]);
 
+  const theme = work ? resolveTheme(work) : null;
+  useEffect(() => {
+    if (!theme) return;
+    applyDocumentTheme(theme);
+    return () => applyDocumentTheme('classique');
+  }, [theme]);
+
   const guard = async (fn: () => unknown) => { if (await login()) fn(); };
 
   if (error) return <div className="empty"><h2>Œuvre introuvable</h2><p>{error}</p><Link to="/">Retour à la bibliothèque</Link></div>;
@@ -40,11 +48,11 @@ export function WorkPage() {
       <Link to="/" className="back-link">← Bibliothèque</Link>
       <section className="work-head">
         <div className="work-cover">
-          <Book size="lg" info={{ title: work.title, subtitle: work.subtitle, author: work.author, fandom: work.fandom, image: work.cover || vols[0]?.cover }} />
+          <Book size="lg" info={{ title: work.title, subtitle: work.subtitle, author: work.author, fandom: work.fandom, image: work.cover || vols[0]?.cover, theme: theme! }} />
         </div>
         <div className="work-info">
           {work.fandom && <div className="eyebrow">{work.fandom}</div>}
-          <h1>{work.title}</h1>
+          <h1>{themeTitle(work.title, theme!)}</h1>
           {work.subtitle && <div className="work-subtitle">{work.subtitle}</div>}
           <div className="work-author">par <strong>{work.author || 'Anonyme'}</strong></div>
           <div className="work-stats">
@@ -78,7 +86,7 @@ export function WorkPage() {
               return (
                 <div className="volume-item" key={v.id}>
                   <Link to={`/lire/${v.id}`} className="shelf-item">
-                    <Book size="md" info={{ title: work.title, author: work.author, fandom: work.fandom, volume: v.number, image: coverOf(v) }} />
+                    <Book size="md" info={{ title: work.title, author: work.author, fandom: work.fandom, volume: v.number, image: coverOf(v), theme: theme! }} />
                     {p && <div className="progress-bar"><i style={{ width: `${Math.min(100, (p.page / Math.max(1, p.total - 1)) * 100)}%` }} /></div>}
                   </Link>
                   <div className="shelf-label">

@@ -3,13 +3,14 @@ import { PageFlip } from 'page-flip';
 import { paginate, pageForAnchor, splitChapterTitle, type BookMeta, type Layout } from './paginate';
 import { pageSound } from './sound';
 import type { VolumeContent } from '../types';
+import { THEMES, ensureThemeFonts, themeById } from '../themes';
 
 const RATIO = 1.42; // hauteur / largeur d'une page
 const TOP = 56, BOTTOM = 64;
 
 interface Dims { w: number; h: number; spread: boolean; fs: number }
 
-function computeDims(scale: number): Dims {
+function computeDims(scale: number, textScale = 1): Dims {
   const vw = window.innerWidth, vh = window.innerHeight;
   const sideGutter = vw > 900 ? 72 : 12;
   const availW = vw - sideGutter * 2;
@@ -19,7 +20,7 @@ function computeDims(scale: number): Dims {
   if (spreadW >= 300 && vw >= 820) { w = spreadW; spread = true; }
   else { w = Math.floor(Math.min(availW, availH / RATIO, 640)); spread = false; }
   const h = Math.floor(w * RATIO);
-  const fs = Math.max(13, Math.min(22, w * 0.034)) * scale;
+  const fs = Math.max(13, Math.min(22, w * 0.034)) * scale * textScale;
   return { w, h, spread, fs: Math.round(fs * 10) / 10 };
 }
 
@@ -28,12 +29,14 @@ const storage = {
   set(k: string, v: unknown) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* ignore */ } },
 };
 
-interface Props { volumeId: string; content: VolumeContent; meta: BookMeta; onClose: () => void }
+interface Props { volumeId: string; content: VolumeContent; meta: BookMeta; theme: string; workTheme: string; onThemeChange: (t: string | null) => void; onClose: () => void }
 
-export function Reader({ volumeId, content, meta, onClose }: Props) {
+export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChange, onClose }: Props) {
   const [scale, setScale] = useState(() => storage.get('dreamy:fontScale', 1));
   const [sound, setSound] = useState(() => storage.get('dreamy:sound', true));
-  const [dims, setDims] = useState(() => computeDims(scale));
+  const textScale = themeById(theme).textScale;
+  const [dims, setDims] = useState(() => computeDims(scale, textScale));
+  const [themeOpen, setThemeOpen] = useState(false);
   const [layout, setLayout] = useState<Layout | null>(null);
   const [page, setPage] = useState(0);
   const [tocOpen, setTocOpen] = useState(false);
@@ -47,23 +50,25 @@ export function Reader({ volumeId, content, meta, onClose }: Props) {
   // Recalcul des dimensions au redimensionnement.
   useEffect(() => {
     let t: number;
-    const onResize = () => { clearTimeout(t); t = window.setTimeout(() => setDims(computeDims(scale)), 250); };
-    setDims(computeDims(scale));
+    const onResize = () => { clearTimeout(t); t = window.setTimeout(() => setDims(computeDims(scale, textScale)), 250); };
+    setDims(computeDims(scale, textScale));
     window.addEventListener('resize', onResize);
     return () => { window.removeEventListener('resize', onResize); clearTimeout(t); };
-  }, [scale]);
+  }, [scale, textScale]);
 
   // Mise en page (après chargement des polices pour des mesures exactes).
   useEffect(() => {
     let cancelled = false;
     setLayout(null);
     (async () => {
-      await document.fonts.ready;
-      const l = await paginate(content, meta, { width: dims.w, height: dims.h, fontSize: dims.fs, className: 'book-root' });
+      // Toutes les polices doivent être chargées, sinon les mesures sont fausses (texte coupé en bas de page).
+      await ensureThemeFonts(theme);
+      if (cancelled) return;
+      const l = await paginate(content, meta, { width: dims.w, height: dims.h, fontSize: dims.fs, className: 'book-root', theme });
       if (!cancelled) setLayout(l);
     })();
     return () => { cancelled = true; };
-  }, [content, meta, dims]);
+  }, [content, meta, dims, theme]);
 
   const pagesHtml = useMemo(() => {
     if (!layout) return '';
@@ -153,6 +158,8 @@ export function Reader({ volumeId, content, meta, onClose }: Props) {
     return () => window.removeEventListener('keydown', onKey);
   }, [goto, layout, tocOpen, onClose]);
 
+  useEffect(() => { if (themeOpen) THEMES.forEach((t) => ensureThemeFonts(t.id)); }, [themeOpen]);
+
   const changeScale = (d: number) => {
     const s = Math.round(Math.max(0.8, Math.min(1.5, scale + d)) * 10) / 10;
     setScale(s); storage.set('dreamy:fontScale', s);
@@ -174,6 +181,7 @@ export function Reader({ volumeId, content, meta, onClose }: Props) {
         </div>
         <div className="reader-tools">
           <button className="icon-btn" onClick={() => setTocOpen(true)} title="Sommaire">☰</button>
+          <button className="icon-btn" onClick={() => setThemeOpen(!themeOpen)} title="Thème">🎨</button>
           <button className="icon-btn" onClick={() => changeScale(-0.1)} title="Texte plus petit">A−</button>
           <button className="icon-btn" onClick={() => changeScale(0.1)} title="Texte plus grand">A+</button>
           <button className="icon-btn" onClick={toggleSound} title="Son des pages">{sound ? '🔊' : '🔈'}</button>
@@ -183,7 +191,7 @@ export function Reader({ volumeId, content, meta, onClose }: Props) {
 
       <div className="reader-stage" style={{ '--page-w': `${dims.w}px`, '--page-h': `${dims.h}px`, '--fs': `${dims.fs}px` } as React.CSSProperties}>
         {dims.spread && <button className="nav-arrow prev" onClick={() => flipRef.current?.flipPrev()} disabled={page === 0} aria-label="Page précédente">‹</button>}
-        <div className="book-root" style={{ transform: `translateX(${shift}px)` }}>
+        <div className="book-root" data-theme={theme} style={{ transform: `translateX(${shift}px)` }}>
           <div ref={hostRef} className="flip-host" />
           {!layout && <div className="paginating">Mise en page du livre…</div>}
         </div>
@@ -195,6 +203,23 @@ export function Reader({ volumeId, content, meta, onClose }: Props) {
         <input type="range" min={0} max={Math.max(0, total - 1)} value={page} onChange={(e) => goto(Number(e.target.value), false)} aria-label="Aller à la page" />
         <span className="foot-page">{total ? `${page} / ${total - 1}` : ''}</span>
       </footer>
+
+      {themeOpen && (
+        <div className="popover-backdrop" onClick={() => setThemeOpen(false)}>
+          <div className="theme-popover" onClick={(e) => e.stopPropagation()}>
+            <h4>Thème de lecture</h4>
+            <div className="theme-grid compact">
+              {THEMES.map((t) => (
+                <button key={t.id} className={`theme-card ${t.id === theme ? 'active' : ''}`} data-theme={t.id} onClick={() => { setThemeOpen(false); onThemeChange(t.id === workTheme ? null : t.id); }}>
+                  <span className="theme-swatch" style={{ background: `linear-gradient(135deg, ${t.swatch[0]} 0 45%, ${t.swatch[1]} 45% 80%, ${t.swatch[2]} 80%)` }} />
+                  <strong>{t.name}</strong>
+                  {t.id === workTheme && <small>thème de l’œuvre</small>}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {tocOpen && layout && (
         <div className="drawer-backdrop" onClick={() => setTocOpen(false)}>

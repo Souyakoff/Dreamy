@@ -21,7 +21,13 @@ peut contenir plusieurs **tomes**, et se lit dans un **livre dont on tourne vrai
   - le texte avant le premier chapitre devient l'avant-propos ;
   - pour un PDF, titres et paragraphes sont reconstitués à partir des tailles de police ; en-têtes et pieds de page répétés sont retirés.
 - **Mise à jour d'un tome** : réimporter une nouvelle version d'un tome existant remplace son texte en gardant sa couverture.
-- **Couvertures** : image importée (œuvre et/ou tome) ou, à défaut, une couverture reliée générée automatiquement.
+- **Couvertures** : image importée (œuvre et/ou tome) ou, à défaut, une couverture générée automatiquement dans le style du thème.
+- **10 thèmes visuels** : Classique, Post-apocalyptique, Fantasy, Dark fantasy, Science-fiction, Cyberpunk, Horreur, Romance, Steampunk, Noir/Polar.
+  Chaque thème change les polices, le papier des pages (taches, parchemin, grille, néons…), les lettrines, les ornements,
+  les couvertures générées, les étagères et le décor du site sur la fiche de l'œuvre et dans le lecteur.
+  - Le thème se choisit par œuvre (« Modifier » ou à l'import) ; en « Automatique », il est deviné d'après l'univers
+    (Fallout → post-apo, Elden Ring → dark fantasy, Star Wars → science-fiction…).
+  - Dans le lecteur, le bouton 🎨 permet à chaque lecteur d'essayer un autre thème (mémorisé dans son navigateur).
 
 ## Lancer le site
 

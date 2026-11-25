@@ -12,7 +12,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="shell">
       <header className="topbar">
-        <Link to="/" className="brand"><span className="brand-mark">❦</span> Dreamy</Link>
+        <Link to="/" className="brand"><span className="brand-mark" /> Dreamy</Link>
         <nav>
           <Link to="/">Bibliothèque</Link>
           <Link to="/importer" className="btn btn-gold">+ Importer</Link>

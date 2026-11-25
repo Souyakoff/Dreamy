@@ -43,7 +43,7 @@ export function removeCover(url) {
 }
 
 const pick = (obj, keys) => Object.fromEntries(keys.filter((k) => obj[k] !== undefined).map((k) => [k, obj[k]]));
-const WORK_FIELDS = ['title', 'subtitle', 'author', 'fandom', 'summary', 'tags', 'status', 'accent'];
+const WORK_FIELDS = ['title', 'subtitle', 'theme', 'author', 'fandom', 'summary', 'tags', 'status', 'accent'];
 const VOL_FIELDS = ['number', 'title', 'subtitle', 'summary', 'version'];
 
 

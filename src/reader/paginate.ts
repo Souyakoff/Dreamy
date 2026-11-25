@@ -29,7 +29,7 @@ function blockEl(b: Block, first: boolean): HTMLElement {
   let el: HTMLElement;
   switch (b.t) {
     case 'h': el = document.createElement('h3'); el.className = 'scene'; break;
-    case 'sep': el = document.createElement('div'); el.className = 'sep'; el.textContent = '⁂'; return el;
+    case 'sep': el = document.createElement('div'); el.className = 'sep'; return el;
     case 'quote': el = document.createElement('blockquote'); break;
     case 'img': el = document.createElement('figure'); break;
     case 'list': el = document.createElement('div'); el.className = 'list'; break;
@@ -65,14 +65,15 @@ function splitAt(el: HTMLElement, pos: { node: Text; offset: number }): [Documen
   return [a.cloneContents(), b.cloneContents()];
 }
 
-export interface PaginateOptions { width: number; height: number; fontSize: number; className: string }
+export interface PaginateOptions { width: number; height: number; fontSize: number; className: string; theme: string }
 
 export async function paginate(content: VolumeContent, meta: BookMeta, opt: PaginateOptions): Promise<Layout> {
   // Conteneur de mesure hors écran, avec exactement le même CSS que les vraies pages.
   const root = document.createElement('div');
   root.className = `${opt.className} measuring`;
+  root.dataset.theme = opt.theme;
   root.style.cssText = `position:absolute;left:-99999px;top:0;visibility:hidden;--page-w:${opt.width}px;--page-h:${opt.height}px;--fs:${opt.fontSize}px;`;
-  root.innerHTML = `<div class="page paper text-page" style="width:${opt.width}px;height:${opt.height}px"><div class="page-inner"><div class="running">&nbsp;</div><div class="page-body"></div><div class="folio">0</div></div></div>`;
+  root.innerHTML = `<div class="page paper text-page right" style="width:${opt.width}px;height:${opt.height}px"><div class="page-inner"><div class="running">&nbsp;</div><div class="page-body"></div><div class="folio">0</div></div></div>`;
   document.body.appendChild(root);
   const body = root.querySelector('.page-body') as HTMLElement;
   const overflows = () => body.scrollHeight > body.clientHeight + 1;
@@ -147,19 +148,21 @@ export async function paginate(content: VolumeContent, meta: BookMeta, opt: Pagi
   pages.push({ kind: 'cover', body: meta.coverHtml, chapter: -1, anchor: 'start', hard: true });
   pages.push({ kind: 'blank', body: '', chapter: -1, anchor: 'start', hard: true, endpaper: true });
   const vol = meta.volumeNumber ? `Tome ${toRoman(meta.volumeNumber)}` : '';
-  pages.push({
-    kind: 'title', chapter: -1, anchor: 'start',
-    body: `<div class="title-page">
+  // Page de titre : réduite automatiquement si elle ne tient pas (petits écrans, gros texte).
+  body.innerHTML = `<div class="title-page">
       ${meta.fandom ? `<div class="tp-fandom">${esc(meta.fandom)}</div>` : ''}
       <h1 class="tp-title">${esc(meta.workTitle)}</h1>
       ${meta.workSubtitle ? `<div class="tp-subtitle">${esc(meta.workSubtitle)}</div>` : ''}
-      <div class="ornament">❦</div>
+      <div class="ornament"></div>
       ${vol ? `<div class="tp-volume">${vol}</div>` : ''}
       ${meta.volumeTitle ? `<div class="tp-voltitle">${esc(meta.volumeTitle)}</div>` : ''}
       <div class="tp-author">${esc(meta.author || 'Auteur anonyme')}</div>
       ${meta.version ? `<div class="tp-version">Version ${esc(meta.version)}</div>` : ''}
-    </div>`,
-  });
+    </div>`;
+  const tp = body.firstElementChild as HTMLElement;
+  for (let k = 0, size = 1; k < 10 && overflows(); k++) { size *= 0.9; tp.style.fontSize = `${size.toFixed(3)}em`; }
+  pages.push({ kind: 'title', chapter: -1, anchor: 'start', body: body.innerHTML });
+  body.innerHTML = '';
 
   // Avant-propos
   if (content.front.length) {
@@ -195,7 +198,7 @@ export async function paginate(content: VolumeContent, meta: BookMeta, opt: Pagi
     const { label, title } = splitChapterTitle(ch.title, c);
     const head = document.createElement('header');
     head.className = 'chapter-opener';
-    head.innerHTML = `${label ? `<div class="ch-label">${esc(label)}</div>` : ''}<h2 class="ch-title">${esc(title)}</h2><div class="ornament">⸙</div>`;
+    head.innerHTML = `${label ? `<div class="ch-label">${esc(label)}</div>` : ''}<h2 class="ch-title">${esc(title)}</h2><div class="ornament chapter-orn"></div>`;
     startPage(`${c}:0:0`);
     body.appendChild(head);
     opener = true;
@@ -218,7 +221,7 @@ export async function paginate(content: VolumeContent, meta: BookMeta, opt: Pagi
 
   pages.push({
     kind: 'end', chapter: content.chapters.length - 1, anchor: 'end',
-    body: `<div class="end-page"><div class="ornament">❦</div><div class="end-text">Fin ${vol ? `du ${vol.replace('Tome', 'tome')}` : ''}</div><div class="end-sub">${esc(meta.workTitle)}</div></div>`,
+    body: `<div class="end-page"><div class="ornament"></div><div class="end-text">Fin ${vol ? `du ${vol.replace('Tome', 'tome')}` : ''}</div><div class="end-sub">${esc(meta.workTitle)}</div></div>`,
   });
   // La garde (intérieur du plat arrière) doit tomber sur une page de droite (index pair),
   // la quatrième de couverture à gauche (index impair) : nombre total de pages pair.

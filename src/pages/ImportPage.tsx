@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api';
 import { useAdmin } from '../admin';
+import { applyDocumentTheme } from '../themes';
 import type { Volume, Work } from '../types';
 import { importFile, toRoman, type ImportDraft } from '../import/structure';
 import { WorkFieldsEditor, fieldsToPayload, workToFields, type WorkFields } from '../components/WorkForm';
@@ -37,7 +38,7 @@ export function ImportPage() {
   const [drag, setDrag] = useState(false);
   const [updateExisting, setUpdateExisting] = useState(true);
 
-  useEffect(() => { api.works().then(setWorks).catch(() => {}); }, []);
+  useEffect(() => { api.works().then(setWorks).catch(() => {}); applyDocumentTheme('classique'); }, []);
   useEffect(() => { if (replaceId) api.volume(replaceId).then(setReplacing).catch((e) => setError(e.message)); }, [replaceId]);
 
   const nextNumber = (workId: string) => Math.max(0, ...(works.find((w) => w.id === workId)?.volumes.map((v) => v.number) || [])) + 1;

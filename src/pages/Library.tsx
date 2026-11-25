@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../api';
 import type { Work } from '../types';
 import { Book } from '../components/Book';
+import { applyDocumentTheme, ensureThemeFonts, resolveTheme } from '../themes';
 
 export function Library() {
   const [works, setWorks] = useState<Work[] | null>(null);
@@ -11,6 +12,9 @@ export function Library() {
   const [fandom, setFandom] = useState('');
 
   useEffect(() => { api.works().then(setWorks).catch((e) => setError(e.message)); }, []);
+  useEffect(() => { applyDocumentTheme('classique'); }, []);
+  // Polices des couvertures générées (chaque œuvre a son thème).
+  useEffect(() => { new Set((works || []).map(resolveTheme)).forEach((t) => ensureThemeFonts(t)); }, [works]);
 
   const fandoms = useMemo(() => [...new Set((works || []).map((w) => w.fandom || 'Divers'))].sort((a, b) => a.localeCompare(b, 'fr')), [works]);
   const shelves = useMemo(() => {
@@ -62,7 +66,7 @@ export function Library() {
             <div className="shelf-books">
               {list.map((w) => (
                 <Link to={`/oeuvre/${w.id}`} className="shelf-item" key={w.id} title={w.title}>
-                  <Book info={{ title: w.title, subtitle: w.subtitle, author: w.author, fandom: w.fandom, image: w.cover || w.volumes[0]?.cover }} />
+                  <Book info={{ title: w.title, subtitle: w.subtitle, author: w.author, fandom: w.fandom, image: w.cover || w.volumes[0]?.cover, theme: resolveTheme(w) }} />
                   <div className="shelf-label">
                     <strong>{w.title}</strong>
                     <span>{w.author || 'Anonyme'} · {w.volumes.length} tome{w.volumes.length > 1 ? 's' : ''}</span>

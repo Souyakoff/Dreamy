@@ -1,0 +1,467 @@
+/* =====================================================================
+   Thèmes. Chaque bloc redéfinit les variables de styles.css ;
+   les règles « extras » ajoutent les décors propres au thème.
+   ===================================================================== */
+
+/* Variables dérivées : recalculées sur chaque élément qui porte un thème. */
+:root, [data-theme] {
+  --dropcap-font: var(--book-display);
+  --dropcap-ink: var(--accent-ink);
+  --cv-title-font: var(--book-caps);
+  --cv-text-font: var(--book-display);
+}
+
+/* ---------------------------------------------------------------- POST-APO */
+[data-theme="postapo"] {
+  --bg: #16170f;
+  --bg-art: var(--noise), radial-gradient(ellipse at 50% -10%, #3d3b1d, transparent 60%), radial-gradient(ellipse at 90% 110%, rgba(140,60,10,.25), transparent 50%);
+  --bar-bg: rgba(18,18,10,.88); --bar-border: #f2c230;
+  --panel: #22231a; --field: #18190f; --line: #4a4a32;
+  --ink: #ebe5cd; --ink-2: #c4bd9c; --muted: #8f8a6c;
+  --gold: #e0b326; --gold-2: #ffd95a; --btn-ink: #15150a; --radius: 2px;
+  --display: 'Special Elite', 'Courier Prime', monospace; --caps: 'Black Ops One', 'Special Elite', sans-serif; --text: 'Courier Prime', monospace;
+  --brand-mark: '☢';
+  --shelf-back: var(--noise), linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.15) 40%, rgba(0,0,0,.55)), repeating-linear-gradient(90deg, #2c2e25 0 2px, #25271f 2px 46px);
+  --shelf-side: #45473c;
+  --shelf-board: radial-gradient(circle at 14px 50%, #c9ccbd 0 2px, #4a4c42 2.5px, transparent 3.5px) 0 0 / 70px 100%, linear-gradient(180deg, #8b8e80, #55584c 40%, #2e3029);
+  --reader-bg: var(--noise), radial-gradient(ellipse at 50% 40%, #31301c, #0c0c07 75%);
+  --paper: #e4d9b6;
+  --paper-art: var(--noise),
+    radial-gradient(circle at 84% 13%, transparent 0 7.4%, rgba(115,70,15,.22) 7.7% 8.6%, transparent 9.2%),
+    radial-gradient(circle at 84% 13%, rgba(130,85,25,.08) 0 7.4%, transparent 7.5%),
+    radial-gradient(ellipse at 8% 96%, rgba(110,70,20,.26), transparent 28%),
+    radial-gradient(ellipse at 100% 100%, rgba(80,50,10,.3), transparent 32%),
+    radial-gradient(ellipse at center, transparent 60%, rgba(90,60,20,.22) 100%);
+  --paper-ink: #201f18; --paper-muted: #7a7155;
+  --accent-ink: #a3221a; --heading-ink: #33321f; --ornament-ink: #8a6d1f;
+  --endpaper: repeating-linear-gradient(-45deg, #dcae22 0 26px, #1b1b14 26px 52px);
+  --board: #2b2c22;
+  --back-bg: var(--noise), radial-gradient(ellipse at 50% 30%, #3e3f2e, #15160f 85%);
+  --back-ink: #e8e1c4; --back-accent: #f2c230;
+  --book-text: 'Courier Prime', 'Courier New', monospace;
+  --book-display: 'Special Elite', 'Courier Prime', monospace;
+  --book-caps: 'Black Ops One', 'Special Elite', sans-serif;
+  --dropcap-font: 'Black Ops One', sans-serif; --dropcap-ink: #1b1b14; --dropcap-size: 2.7em;
+  --line-height: 1.45;
+  --ornament: '☢'; --chapter-ornament: '☢'; --sep: '▪ ▪ ▪';
+  --scene-before: '▸ '; --scene-after: '';
+}
+html[data-theme="postapo"] .topbar { border-bottom: 5px solid; border-image: repeating-linear-gradient(-45deg, #e0b326 0 12px, #15150a 12px 24px) 5; }
+html[data-theme="postapo"] .btn { text-transform: uppercase; letter-spacing: .06em; font-family: var(--display); font-size: 15px; }
+html[data-theme="postapo"] .work-info h1 { letter-spacing: .02em; text-shadow: 2px 2px 0 rgba(0,0,0,.4); }
+html[data-theme="postapo"] .eyebrow { font-family: var(--display); }
+.book-root[data-theme="postapo"] .page-body p.first::first-letter { background: #dcae22; padding: .08em .12em .04em; margin: .08em .14em 0 0; line-height: .85; font-weight: 400; }
+.book-root[data-theme="postapo"] .page-body h3.scene { font-style: normal; text-transform: uppercase; font-size: .92em; letter-spacing: .04em; text-align: left; background: rgba(40,35,10,.08); border-left: 3px solid #a3221a; padding: .15em .5em; font-weight: 400; }
+.book-root[data-theme="postapo"] .ch-label { display: inline-block; border: 2px solid currentColor; padding: .15em .6em; transform: rotate(-3deg); letter-spacing: .2em; font-family: var(--book-caps); opacity: .85; }
+.book-root[data-theme="postapo"] .ch-title { font-weight: 400; }
+.book-root[data-theme="postapo"] .tp-title, .book-root[data-theme="postapo"] .end-text, .book-root[data-theme="postapo"] .toc-title, .book-root[data-theme="postapo"] .front-title { font-weight: 400; }
+.book-root[data-theme="postapo"] .running { font-family: var(--book-display); letter-spacing: .12em; }
+.cover-gen[data-theme="postapo"]::before { background: var(--noise), radial-gradient(ellipse at 30% 70%, rgba(150,70,10,.5), transparent 50%); opacity: .9; mix-blend-mode: multiply; }
+.cover-gen[data-theme="postapo"] .cv-frame { border: 0; outline: 0; }
+.cover-gen[data-theme="postapo"] .cv-deco { position: absolute; left: -9%; right: -9%; bottom: 17%; height: 4.5cqw; background: repeating-linear-gradient(-45deg, var(--cv-gold) 0 3cqw, #111 3cqw 6cqw); box-shadow: 0 0 0 1px rgba(0,0,0,.4); }
+.cover-gen[data-theme="postapo"] .cv-deco::before { content: ''; position: absolute; left: 0; right: 0; top: -66cqw; height: 4.5cqw; background: inherit; }
+.cover-gen[data-theme="postapo"] .cv-title { font-weight: 400; letter-spacing: .02em; text-shadow: 2px 2px 0 rgba(0,0,0,.6); }
+.cover-gen[data-theme="postapo"] .cv-motif { font-size: 14cqw; }
+
+/* ---------------------------------------------------------------- FANTASY */
+[data-theme="fantasy"] {
+  --bg: #0f1d15;
+  --bg-art: radial-gradient(ellipse at 50% -10%, #2d5038, transparent 60%), radial-gradient(ellipse at 50% 120%, #1c140a, transparent 60%);
+  --bar-bg: rgba(10,22,15,.8); --bar-border: rgba(212,169,60,.4);
+  --panel: #172a1f; --field: #10201a; --line: #36553f;
+  --ink: #f3ead0; --ink-2: #d3c7a2; --muted: #9aa58a;
+  --gold: #d4a93c; --gold-2: #f3d27a; --btn-ink: #1d1606; --radius: 10px;
+  --display: 'IM Fell English', 'EB Garamond', serif; --caps: 'Cinzel Decorative', 'Cinzel', serif; --text: 'Alegreya', 'EB Garamond', serif;
+  --brand-mark: '⚜';
+  --shelf-back: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.1) 40%, rgba(0,0,0,.4)), repeating-linear-gradient(90deg, #2a1c10 0 3px, #26190e 3px 11px);
+  --shelf-side: #4a3017;
+  --shelf-board: linear-gradient(180deg, #9c6b3a 0%, #6e4622 35%, #3f2810 100%);
+  --reader-bg: radial-gradient(ellipse at 50% 40%, #25422d, #07110b 78%);
+  --paper: #f0e0b8;
+  --paper-art: var(--noise), radial-gradient(ellipse at center, transparent 52%, rgba(130,85,25,.32) 100%);
+  --paper-ink: #2b2113; --paper-muted: #8a7550;
+  --accent-ink: #1f5a3a; --heading-ink: #6b3a12; --ornament-ink: #b0862a;
+  --frame-inset: 10px; --frame-border: 1px solid rgba(176,134,42,.75); --frame-outline: 1px solid rgba(176,134,42,.45); --frame-outline-offset: 3px;
+  --endpaper: radial-gradient(circle at 25% 25%, rgba(243,210,122,.35) 0 1.5px, transparent 2px) 0 0 / 14px 14px, radial-gradient(ellipse at 30% 20%, #2f6b4a, #123321 70%);
+  --board: #14281c;
+  --back-bg: radial-gradient(ellipse at 50% 30%, #24402c, #0b1a11 80%);
+  --back-ink: #f1e2bd; --back-accent: #e8c66b;
+  --book-text: 'Alegreya', 'EB Garamond', serif;
+  --book-display: 'IM Fell English', 'EB Garamond', serif;
+  --book-caps: 'Cinzel Decorative', 'Cinzel', serif;
+  --dropcap-font: 'Cinzel Decorative', serif; --dropcap-ink: #f3d27a; --dropcap-size: 2.9em;
+  --ornament: '❦'; --chapter-ornament: '⚜'; --sep: '❧'; --scene-before: '❧ '; --scene-after: ' ☙';
+}
+html[data-theme="fantasy"] .work-info h1 { font-weight: 400; }
+html[data-theme="fantasy"] .hero h1::after, html[data-theme="fantasy"] .shelf-name span { color: var(--gold); }
+.book-root[data-theme="fantasy"] .page-body p.first::first-letter { background: linear-gradient(135deg, #2a6b46, #123d26); border: 2px solid #b0862a; box-shadow: inset 0 0 0 2px #123d26, inset 0 0 0 3px rgba(243,210,122,.5); padding: .12em .14em .04em; margin: .06em .14em 0 0; line-height: .9; font-weight: 700; }
+.book-root[data-theme="fantasy"] .ch-title { font-weight: 400; font-size: 2.05em; }
+.book-root[data-theme="fantasy"] .ch-label { letter-spacing: .15em; text-transform: none; font-weight: 700; }
+.book-root[data-theme="fantasy"] .page-body h3.scene { font-weight: 400; }
+.book-root[data-theme="fantasy"] .tp-title { font-weight: 700; }
+.cover-gen[data-theme="fantasy"] .cv-frame { border: 2px double var(--cv-gold); border-width: 3px; border-radius: 48% 48% 3px 3px / 16% 16% 3px 3px; outline-offset: 2.5cqw; }
+.cover-gen[data-theme="fantasy"]::before { background: radial-gradient(circle, rgba(255,230,160,.35) 1px, transparent 1.5px) 0 0 / 9px 9px; opacity: .25; }
+.cover-gen[data-theme="fantasy"] .cv-motif { font-size: 13cqw; }
+
+/* ------------------------------------------------------------ DARK FANTASY */
+[data-theme="darkfantasy"] {
+  --bg: #0a0808;
+  --bg-art: var(--noise), radial-gradient(ellipse at 50% -10%, #3d0b0f, transparent 55%), radial-gradient(ellipse at 50% 120%, #000, transparent 60%);
+  --bar-bg: rgba(8,6,6,.88); --bar-border: rgba(163,22,31,.45);
+  --panel: #161212; --field: #0f0c0c; --line: #3b2424;
+  --ink: #e8ddd0; --ink-2: #bfae9e; --muted: #8a7a70;
+  --gold: #8f141c; --gold-2: #cf2f37; --btn-ink: #f6ebde; --radius: 2px;
+  --display: 'Pirata One', 'Cinzel', serif; --caps: 'Cinzel', serif; --text: 'EB Garamond', serif;
+  --brand-mark: '✠';
+  --shelf-back: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.2) 40%, rgba(0,0,0,.6)), repeating-linear-gradient(90deg, #171112 0 3px, #130e0f 3px 9px);
+  --shelf-side: #1e1416;
+  --shelf-board: linear-gradient(180deg, #3d2b2b, #1f1515 40%, #0b0808);
+  --reader-bg: var(--noise), radial-gradient(ellipse at 50% 40%, #2a0d10, #050303 72%);
+  --paper: #221d1a;
+  --paper-art: var(--noise), radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.6) 100%), radial-gradient(ellipse at 100% 0, rgba(120,10,15,.18), transparent 40%);
+  --paper-ink: #ddd2c2; --paper-muted: #8c7f72;
+  --accent-ink: #c62832; --heading-ink: #cdb68a; --ornament-ink: #9b1c22;
+  --gutter-shade: rgba(0,0,0,.6);
+  --endpaper: var(--noise), radial-gradient(ellipse at 50% 50%, #3d0b0f, #120405 80%);
+  --board: #0c0808;
+  --back-bg: var(--noise), radial-gradient(ellipse at 50% 30%, #3a0b0e, #070404 80%);
+  --back-ink: #e2d6c4; --back-accent: #c62832;
+  --book-text: 'EB Garamond', serif;
+  --book-display: 'Pirata One', 'Cinzel', serif;
+  --book-caps: 'Cinzel', serif;
+  --dropcap-font: 'UnifrakturMaguntia', 'Pirata One', serif; --dropcap-ink: #b51e2b; --dropcap-size: 3.7em;
+  --ornament: '✠'; --chapter-ornament: '†'; --sep: '✠'; --scene-before: '† '; --scene-after: ' †';
+}
+html[data-theme="darkfantasy"] .work-info h1 { font-weight: 400; text-shadow: 0 0 24px rgba(200,30,40,.35); }
+html[data-theme="darkfantasy"] .hero h1, html[data-theme="darkfantasy"] h2 { font-weight: 400; }
+.book-root[data-theme="darkfantasy"] .page-body p.first::first-letter { font-weight: 400; text-shadow: 0 0 10px rgba(180,20,30,.45); }
+.book-root[data-theme="darkfantasy"] .ch-title { font-weight: 400; font-size: 2.2em; letter-spacing: .02em; text-shadow: 0 2px 0 #000, 0 0 18px rgba(180,20,30,.35); }
+.book-root[data-theme="darkfantasy"] .ch-title::after { content: ''; display: block; width: 40%; height: 2px; margin: .35em auto 0; background: linear-gradient(90deg, transparent, #9b1c22, transparent); }
+.book-root[data-theme="darkfantasy"] .page-body h3.scene { font-style: normal; font-weight: 400; font-size: 1.15em; letter-spacing: .03em; }
+.book-root[data-theme="darkfantasy"] .tp-title { font-family: var(--book-display); font-weight: 400; font-size: 2.6em; letter-spacing: .02em; }
+.cover-gen[data-theme="darkfantasy"] { --cv-title-font: 'Pirata One', serif; }
+.cover-gen[data-theme="darkfantasy"] .cv-frame { border-radius: 50% 50% 0 0 / 22% 22% 0 0; outline: 0; }
+.cover-gen[data-theme="darkfantasy"] .cv-title { font-weight: 400; font-size: calc(13cqw * var(--cv-size)); text-shadow: 0 0 14px rgba(200,20,30,.6), 0 2px 0 #000; }
+.cover-gen[data-theme="darkfantasy"]::before { background: var(--noise), radial-gradient(ellipse at 50% 45%, transparent 30%, rgba(0,0,0,.7) 85%); opacity: 1; mix-blend-mode: normal; }
+
+/* ---------------------------------------------------------- SCIENCE-FICTION */
+[data-theme="scifi"] {
+  --stars: radial-gradient(1.5px 1.5px at 12% 18%, rgba(255,255,255,.9), transparent 70%) 0 0 / 320px 320px,
+    radial-gradient(1px 1px at 72% 34%, rgba(200,230,255,.8), transparent 70%) 0 0 / 260px 260px,
+    radial-gradient(1px 1px at 40% 80%, rgba(255,255,255,.7), transparent 70%) 0 0 / 190px 190px,
+    radial-gradient(2px 2px at 85% 65%, rgba(143,230,255,.9), transparent 70%) 0 0 / 420px 420px;
+  --bg: #050a16;
+  --bg-art: var(--stars), radial-gradient(ellipse at 75% -10%, rgba(54,120,240,.35), transparent 55%), radial-gradient(ellipse at 10% 110%, rgba(120,60,200,.25), transparent 55%);
+  --bar-bg: rgba(5,10,22,.82); --bar-border: rgba(54,197,240,.4);
+  --panel: #0b1528; --field: #081022; --line: #1f3352;
+  --ink: #e6f1ff; --ink-2: #a9c1dd; --muted: #6f86a6;
+  --gold: #36c5f0; --gold-2: #8fe6ff; --btn-ink: #03121c; --radius: 3px;
+  --display: 'Exo 2', sans-serif; --caps: 'Orbitron', sans-serif; --text: 'Exo 2', sans-serif;
+  --brand-mark: '✦';
+  --shelf-back: linear-gradient(180deg, rgba(0,0,0,.4), rgba(0,0,0,.1) 40%, rgba(0,0,0,.5)), repeating-linear-gradient(0deg, rgba(54,197,240,.07) 0 1px, transparent 1px 24px), repeating-linear-gradient(90deg, rgba(54,197,240,.07) 0 1px, transparent 1px 24px), #0a1426;
+  --shelf-side: #13233d;
+  --shelf-board: linear-gradient(180deg, #8fe6ff 0 2px, #2a4467 2px, #142540 60%, #0a1426);
+  --reader-bg: var(--stars), radial-gradient(ellipse at 50% 40%, #10264a, #02050c 75%);
+  --paper: #eef3f8;
+  --paper-art: repeating-linear-gradient(0deg, rgba(54,120,200,.06) 0 1px, transparent 1px 24px), repeating-linear-gradient(90deg, rgba(54,120,200,.06) 0 1px, transparent 1px 24px);
+  --paper-ink: #182231; --paper-muted: #7086a0;
+  --accent-ink: #0a7fb2; --heading-ink: #23476b; --ornament-ink: #36a3d0;
+  --gutter-shade: rgba(10,30,60,.14);
+  --page-frame: inset 0 3px 0 #36c5f0;
+  --endpaper: var(--stars), radial-gradient(ellipse at 30% 30%, #1a3566, #050a16 70%);
+  --board: #0a1426;
+  --back-bg: var(--stars), radial-gradient(ellipse at 50% 30%, #13294d, #03070f 80%);
+  --back-ink: #dbe9fb; --back-accent: #7fe3ff;
+  --book-text: 'Exo 2', sans-serif;
+  --book-display: 'Exo 2', sans-serif;
+  --book-caps: 'Orbitron', sans-serif;
+  --dropcap-font: 'Orbitron', sans-serif; --dropcap-ink: #0a7fb2; --dropcap-size: 2.8em;
+  --line-height: 1.55;
+  --ornament: '✦'; --chapter-ornament: '◈'; --sep: '·  ·  ✦  ·  ·'; --scene-before: '// '; --scene-after: '';
+}
+html[data-theme="scifi"] .work-info h1 { font-family: var(--caps); font-size: clamp(30px, 4vw, 46px); letter-spacing: .06em; }
+html[data-theme="scifi"] .btn { font-family: var(--caps); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+html[data-theme="scifi"] .panel, html[data-theme="scifi"] .modal { clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)); }
+.book-root[data-theme="scifi"] .page-body p.first::first-letter { font-weight: 700; }
+.book-root[data-theme="scifi"] .page-body h3.scene { font-family: var(--book-caps); font-style: normal; text-transform: uppercase; font-size: .72em; letter-spacing: .14em; text-align: left; color: var(--accent-ink); border-left: 2px solid #36c5f0; padding: .2em .6em; background: rgba(54,197,240,.07); font-weight: 500; }
+.book-root[data-theme="scifi"] .ch-label { letter-spacing: .4em; font-size: .7em; font-weight: 700; }
+.book-root[data-theme="scifi"] .ch-label::before, .book-root[data-theme="scifi"] .ch-label::after { content: ' ─── '; color: #36a3d0; letter-spacing: 0; }
+.book-root[data-theme="scifi"] .ch-title { font-weight: 600; letter-spacing: .01em; }
+.book-root[data-theme="scifi"] .tp-title { font-size: 1.7em; letter-spacing: .08em; }
+.book-root[data-theme="scifi"] .running { font-size: .55em; }
+.cover-gen[data-theme="scifi"]::before { background: var(--stars); opacity: .9; mix-blend-mode: screen; }
+.cover-gen[data-theme="scifi"] .cv-frame { border: 0; outline: 0; }
+.cover-gen[data-theme="scifi"] .cv-deco { position: absolute; width: 150cqw; height: 150cqw; left: -32cqw; bottom: -128cqw; border-radius: 50%; background: radial-gradient(circle at 50% 0, color-mix(in srgb, var(--cv-gold) 40%, transparent), var(--cv-dark) 30%); box-shadow: 0 -2px 18px var(--cv-gold), inset 0 2px 6px var(--cv-gold); }
+.cover-gen[data-theme="scifi"] .cv-title { font-weight: 800; font-size: calc(8.5cqw * var(--cv-size)); letter-spacing: .08em; text-shadow: 0 0 12px color-mix(in srgb, var(--cv-gold) 70%, transparent); }
+.cover-gen[data-theme="scifi"] .cv-author { bottom: 24%; }
+
+/* ---------------------------------------------------------------- CYBERPUNK */
+[data-theme="cyberpunk"] {
+  --bg: #07040d;
+  --bg-art: repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 3px), radial-gradient(ellipse at 85% -10%, rgba(5,217,232,.28), transparent 50%), radial-gradient(ellipse at 5% 0%, rgba(255,42,109,.3), transparent 45%), linear-gradient(transparent 55%, rgba(255,42,109,.12));
+  --bar-bg: rgba(10,5,20,.88); --bar-border: #ff2a6d;
+  --panel: #120b20; --field: #0c0716; --line: #3a2357;
+  --ink: #f1e9ff; --ink-2: #bfb0dd; --muted: #8070a0;
+  --gold: #ff2a6d; --gold-2: #05d9e8; --btn-ink: #0a0412; --radius: 0;
+  --display: 'Audiowide', sans-serif; --caps: 'Audiowide', sans-serif; --text: 'Chakra Petch', sans-serif;
+  --brand-mark: '◢';
+  --shelf-back: repeating-linear-gradient(90deg, rgba(5,217,232,.06) 0 1px, transparent 1px 32px), linear-gradient(#0c0716, #170a26);
+  --shelf-side: #ff2a6d;
+  --shelf-board: linear-gradient(180deg, #05d9e8 0 2px, #1d1033 2px, #0c0716);
+  --reader-bg: repeating-linear-gradient(0deg, rgba(255,255,255,.02) 0 1px, transparent 1px 3px), radial-gradient(ellipse at 50% 40%, #2a0f3d, #05020a 75%);
+  --paper: #120d1f;
+  --paper-art: repeating-linear-gradient(0deg, rgba(255,255,255,.028) 0 1px, transparent 1px 3px), radial-gradient(ellipse at 100% 0, rgba(5,217,232,.13), transparent 50%), radial-gradient(ellipse at 0 100%, rgba(255,42,109,.13), transparent 50%);
+  --paper-ink: #e3dcf5; --paper-muted: #7d6fa0;
+  --accent-ink: #ff2a6d; --heading-ink: #05d9e8; --ornament-ink: #ff2a6d;
+  --gutter-shade: rgba(0,0,0,.65);
+  --page-frame: inset 0 0 0 1px rgba(5,217,232,.25);
+  --endpaper: repeating-linear-gradient(45deg, rgba(255,42,109,.85) 0 2px, #0c0716 2px 14px);
+  --board: #07040d;
+  --back-bg: repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, transparent 1px 3px), radial-gradient(ellipse at 50% 30%, #2a0f3d, #05020a 80%);
+  --back-ink: #e3dcf5; --back-accent: #05d9e8;
+  --book-text: 'Chakra Petch', sans-serif;
+  --book-display: 'Audiowide', sans-serif;
+  --book-caps: 'Share Tech Mono', monospace;
+  --dropcap-font: 'Audiowide', sans-serif; --dropcap-ink: #05d9e8; --dropcap-size: 2.8em;
+  --ornament: '◢◤'; --chapter-ornament: '⟁'; --sep: '//  ▓▒░  //'; --scene-before: '> '; --scene-after: ' _';
+}
+html[data-theme="cyberpunk"] .work-info h1 { font-size: clamp(30px, 4vw, 48px); text-shadow: 2px 0 #ff2a6d, -2px 0 #05d9e8, 0 0 20px rgba(255,42,109,.5); }
+html[data-theme="cyberpunk"] .btn-gold { background: linear-gradient(90deg, #05d9e8, #ff2a6d); border: 0; }
+html[data-theme="cyberpunk"] .btn { font-family: var(--caps); font-size: 13px; letter-spacing: .06em; }
+html[data-theme="cyberpunk"] .shelf-board { box-shadow: 0 0 18px rgba(5,217,232,.55), 0 14px 22px -6px rgba(0,0,0,.7); }
+html[data-theme="cyberpunk"] .panel, html[data-theme="cyberpunk"] .modal { box-shadow: 0 0 0 1px rgba(255,42,109,.25), 0 0 24px rgba(255,42,109,.08); }
+.book-root[data-theme="cyberpunk"] .page-body p.first::first-letter { font-weight: 400; text-shadow: 0 0 10px rgba(5,217,232,.7); }
+.book-root[data-theme="cyberpunk"] .ch-title { font-weight: 400; color: #f1e9ff; text-shadow: 2px 0 rgba(255,42,109,.8), -2px 0 rgba(5,217,232,.8), 0 0 14px rgba(255,42,109,.45); }
+.book-root[data-theme="cyberpunk"] .ch-label { text-shadow: 0 0 8px rgba(255,42,109,.8); }
+.book-root[data-theme="cyberpunk"] .page-body h3.scene { font-family: var(--book-caps); font-style: normal; font-weight: 400; text-align: left; text-transform: uppercase; font-size: .9em; text-shadow: 0 0 6px rgba(5,217,232,.6); }
+.book-root[data-theme="cyberpunk"] .tp-title { font-family: var(--book-display); font-weight: 400; text-shadow: 2px 0 rgba(255,42,109,.8), -2px 0 rgba(5,217,232,.8); }
+.book-root[data-theme="cyberpunk"] .toc-row a { color: var(--paper-ink); }
+.book-root[data-theme="cyberpunk"] .end-text { text-shadow: 0 0 10px rgba(255,42,109,.8); }
+.cover-gen[data-theme="cyberpunk"] { --cv-title-font: 'Audiowide', sans-serif; }
+.cover-gen[data-theme="cyberpunk"]::before { background: repeating-linear-gradient(0deg, rgba(255,255,255,.07) 0 1px, transparent 1px 3px); opacity: 1; mix-blend-mode: normal; }
+.cover-gen[data-theme="cyberpunk"] .cv-frame { border: 0; outline: 0; }
+.cover-gen[data-theme="cyberpunk"] .cv-deco { position: absolute; left: -20%; right: -20%; bottom: -8%; height: 42%; transform: perspective(60cqw) rotateX(62deg); transform-origin: bottom; background: repeating-linear-gradient(90deg, var(--cv-gold) 0 1px, transparent 1px 9cqw), repeating-linear-gradient(0deg, var(--cv-gold) 0 1px, transparent 1px 7cqw); opacity: .55; filter: drop-shadow(0 0 3px var(--cv-gold)); }
+.cover-gen[data-theme="cyberpunk"] .cv-title { font-weight: 400; color: #fff; text-shadow: 0 0 6px var(--cv-gold), 0 0 18px var(--cv-gold), 2px 0 rgba(255,42,109,.7), -2px 0 rgba(5,217,232,.7); }
+.cover-gen[data-theme="cyberpunk"] .cv-author { bottom: 40%; display: none; }
+
+/* ------------------------------------------------------------------ HORREUR */
+[data-theme="horreur"] {
+  --bg: #0b0606;
+  --bg-art: var(--noise), radial-gradient(ellipse at 50% -10%, #2c0808, transparent 55%), radial-gradient(ellipse at 50% 120%, #000, transparent 60%);
+  --bar-bg: rgba(8,4,4,.9); --bar-border: rgba(155,15,15,.55);
+  --panel: #170e0d; --field: #100908; --line: #3b2220;
+  --ink: #ebe1d0; --ink-2: #c0ae98; --muted: #8a7766;
+  --gold: #8b0d0d; --gold-2: #c8221f; --btn-ink: #f6eadb; --radius: 3px;
+  --display: 'Creepster', 'Special Elite', cursive; --caps: 'Special Elite', monospace; --text: 'Crimson Pro', serif;
+  --brand-mark: '☠';
+  --shelf-back: var(--noise), linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.2) 40%, rgba(0,0,0,.6)), repeating-linear-gradient(90deg, #1d120e 0 4px, #170e0b 4px 13px);
+  --shelf-side: #221510;
+  --shelf-board: var(--noise), linear-gradient(180deg, #4a3226, #2a1a12 40%, #0f0906);
+  --reader-bg: var(--noise), radial-gradient(ellipse at 50% 40%, #2a0a0a, #030101 72%);
+  --paper: #e0d3b0;
+  --paper-art: var(--noise),
+    radial-gradient(circle at 91% 9%, rgba(110,0,0,.55) 0 2.2%, rgba(110,0,0,.25) 3%, transparent 5.5%),
+    radial-gradient(circle at 86% 15%, rgba(110,0,0,.45) 0 .7%, transparent .9%),
+    radial-gradient(circle at 95% 16%, rgba(110,0,0,.4) 0 .45%, transparent .6%),
+    radial-gradient(circle at 83% 6%, rgba(110,0,0,.4) 0 .35%, transparent .5%),
+    radial-gradient(ellipse at 0 100%, rgba(60,40,20,.4), transparent 40%),
+    radial-gradient(ellipse at center, transparent 50%, rgba(70,40,10,.35));
+  --paper-ink: #1e1714; --paper-muted: #7b6a55;
+  --accent-ink: #8b0d0d; --heading-ink: #3d1f14; --ornament-ink: #8b0d0d;
+  --endpaper: var(--noise), radial-gradient(ellipse at 50% 50%, #4a0909, #170303 80%);
+  --board: #120808;
+  --back-bg: var(--noise), radial-gradient(ellipse at 50% 30%, #2a0808, #050202 80%);
+  --back-ink: #e2d6b5; --back-accent: #c8221f;
+  --book-text: 'Crimson Pro', serif;
+  --book-display: 'Creepster', cursive;
+  --book-caps: 'Special Elite', monospace;
+  --dropcap-font: 'Creepster', cursive; --dropcap-ink: #8b0d0d; --dropcap-size: 3.6em;
+  --ornament: '☠'; --chapter-ornament: '✝'; --sep: '✝'; --scene-before: ''; --scene-after: '';
+}
+html[data-theme="horreur"] .work-info h1 { font-weight: 400; letter-spacing: .04em; color: #d8c8b0; text-shadow: 0 3px 0 #5a0606; }
+html[data-theme="horreur"] h2 { font-weight: 400; letter-spacing: .03em; }
+.book-root[data-theme="horreur"] .page-body p.first::first-letter { font-weight: 400; }
+.book-root[data-theme="horreur"] .ch-title { font-weight: 400; color: #7a0b0b; letter-spacing: .04em; font-size: 2.2em; }
+.book-root[data-theme="horreur"] .chapter-opener { background: linear-gradient(106deg, transparent 46.5%, rgba(90,0,0,.32) 47% 47.6%, transparent 48.2%) 88% 0 / 30% 50% no-repeat, linear-gradient(106deg, transparent 46.5%, rgba(90,0,0,.32) 47% 47.6%, transparent 48.2%) 94% 0 / 30% 50% no-repeat, linear-gradient(106deg, transparent 46.5%, rgba(90,0,0,.32) 47% 47.6%, transparent 48.2%) 100% 0 / 30% 50% no-repeat; }
+.book-root[data-theme="horreur"] .page-body h3.scene { font-family: var(--book-caps); font-style: normal; font-weight: 400; text-transform: uppercase; font-size: .88em; letter-spacing: .06em; }
+.book-root[data-theme="horreur"] .tp-title { font-family: var(--book-display); font-weight: 400; color: #7a0b0b; font-size: 2.2em; letter-spacing: .04em; }
+.cover-gen[data-theme="horreur"] { --cv-title-font: 'Creepster', cursive; }
+.cover-gen[data-theme="horreur"]::before { background: var(--noise), radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,.7)); opacity: 1; mix-blend-mode: normal; }
+.cover-gen[data-theme="horreur"] .cv-frame { border: 0; outline: 0; }
+.cover-gen[data-theme="horreur"] .cv-deco { position: absolute; top: -7%; left: -8%; right: -8%; height: 16%;
+  background: radial-gradient(ellipse 4% 70% at 12% 0, #8b0d0d 60%, transparent 62%), radial-gradient(circle at 12% 70%, #8b0d0d 0 3.5%, transparent 4%),
+    radial-gradient(ellipse 3% 110% at 34% 0, #8b0d0d 60%, transparent 62%), radial-gradient(circle at 34% 108%, #8b0d0d 0 2.6%, transparent 3%),
+    radial-gradient(ellipse 5% 50% at 58% 0, #8b0d0d 60%, transparent 62%),
+    radial-gradient(ellipse 3% 90% at 80% 0, #8b0d0d 60%, transparent 62%), radial-gradient(circle at 80% 88%, #8b0d0d 0 2.6%, transparent 3%),
+    linear-gradient(#8b0d0d 0 22%, transparent 22%); }
+.cover-gen[data-theme="horreur"] .cv-title { font-weight: 400; font-size: calc(12cqw * var(--cv-size)); letter-spacing: .05em; text-shadow: 0 3px 0 rgba(0,0,0,.7); }
+
+/* ------------------------------------------------------------------ ROMANCE */
+[data-theme="romance"] {
+  --bg: #22101a;
+  --bg-art: radial-gradient(ellipse at 50% -10%, #5c2339, transparent 60%), radial-gradient(circle at 12% 85%, rgba(217,121,143,.14), transparent 30%), radial-gradient(circle at 90% 70%, rgba(247,214,201,.08), transparent 30%);
+  --bar-bg: rgba(34,16,26,.78); --bar-border: rgba(217,121,143,.4);
+  --panel: #301824; --field: #26121c; --line: #5a3044;
+  --ink: #fbeef0; --ink-2: #e2bfc7; --muted: #b08a95;
+  --gold: #d9798f; --gold-2: #f4b6c2; --btn-ink: #3a0f1f; --radius: 14px;
+  --display: 'Great Vibes', cursive; --caps: 'Cormorant Garamond', serif; --text: 'Lora', serif;
+  --brand-mark: '♡';
+  --shelf-back: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.05) 40%, rgba(0,0,0,.3)), repeating-linear-gradient(90deg, #3a1d2a 0 3px, #361a27 3px 9px);
+  --shelf-side: #4a2636;
+  --shelf-board: linear-gradient(180deg, #f8e4e8, #dcb6bf 40%, #a8808a);
+  --reader-bg: radial-gradient(ellipse at 50% 40%, #4e1f33, #170910 78%);
+  --paper: #fbf0ee;
+  --paper-art: radial-gradient(circle at 100% 0, rgba(217,121,143,.2), transparent 24%), radial-gradient(circle at 0 100%, rgba(217,121,143,.15), transparent 24%);
+  --paper-ink: #3a2229; --paper-muted: #a07f88;
+  --accent-ink: #b5476a; --heading-ink: #8a3a55; --ornament-ink: #d58a9e;
+  --gutter-shade: rgba(120,40,60,.12);
+  --endpaper: radial-gradient(circle, rgba(255,255,255,.45) 2px, transparent 2.5px) 0 0 / 16px 16px, #e2adb8;
+  --board: #7a2e45;
+  --back-bg: radial-gradient(ellipse at 50% 30%, #8a3a55, #3a1020 80%);
+  --back-ink: #fbe3e8; --back-accent: #f7d6c9;
+  --book-text: 'Lora', serif;
+  --book-display: 'Great Vibes', cursive;
+  --book-caps: 'Cormorant Garamond', serif;
+  --dropcap-font: 'Great Vibes', cursive; --dropcap-ink: #b5476a; --dropcap-size: 3.9em;
+  --line-height: 1.55;
+  --ornament: '❦'; --chapter-ornament: '♡'; --sep: '❀'; --scene-before: '❀ '; --scene-after: ' ❀';
+}
+html[data-theme="romance"] h1, html[data-theme="romance"] h2 { font-weight: 400; }
+html[data-theme="romance"] .work-info h1 { font-size: clamp(48px, 7vw, 76px); }
+html[data-theme="romance"] .work-subtitle { font-family: var(--text); font-size: 20px; }
+html[data-theme="romance"] .reader-title strong { font-family: var(--caps); font-weight: 600; }
+html[data-theme="romance"] .panel h2, html[data-theme="romance"] .modal h2 { font-size: 34px; }
+html[data-theme="romance"] .eyebrow, html[data-theme="romance"] .shelf-name { font-weight: 600; }
+.book-root[data-theme="romance"] .page-body p.first::first-letter { font-weight: 400; padding-right: .12em; }
+.book-root[data-theme="romance"] .ch-title { font-weight: 400; font-size: 2.6em; line-height: 1.05; }
+.book-root[data-theme="romance"] .ch-label { font-weight: 600; letter-spacing: .35em; }
+.book-root[data-theme="romance"] .page-body h3.scene { font-family: var(--book-text); font-weight: 400; font-size: 1em; }
+.book-root[data-theme="romance"] .toc-name { font-family: var(--book-text); font-size: .95em; }
+.book-root[data-theme="romance"] .tp-title { font-family: var(--book-display); font-weight: 400; font-size: 3em; }
+.book-root[data-theme="romance"] .tp-subtitle, .book-root[data-theme="romance"] .tp-author { font-family: var(--book-text); }
+.book-root[data-theme="romance"] .running, .book-root[data-theme="romance"] .toc-label, .book-root[data-theme="romance"] .front-title, .book-root[data-theme="romance"] .toc-title { font-weight: 600; }
+.cover-gen[data-theme="romance"] { --cv-title-font: 'Great Vibes', cursive; --cv-text-font: 'Lora', serif; }
+.cover-gen[data-theme="romance"] .cv-frame { border-radius: 50% 50% 50% 50% / 30% 30% 30% 30%; outline: 0; inset: 9%; }
+.cover-gen[data-theme="romance"] .cv-title { font-weight: 400; font-size: calc(13cqw * var(--cv-size)); line-height: 1; letter-spacing: 0; }
+.cover-gen[data-theme="romance"] .cv-fandom { font-family: 'Cormorant Garamond', serif; font-weight: 600; }
+.cover-gen[data-theme="romance"]::before { background: radial-gradient(circle, rgba(255,255,255,.5) 1px, transparent 1.5px) 0 0 / 10px 10px; opacity: .2; mix-blend-mode: normal; }
+
+/* ---------------------------------------------------------------- STEAMPUNK */
+[data-theme="steampunk"] {
+  --bg: #160e08;
+  --bg-art: var(--noise), radial-gradient(ellipse at 50% -10%, #4d2e18, transparent 55%);
+  --bar-bg: rgba(26,16,8,.88); --bar-border: #b8833a;
+  --panel: #261a10; --field: #1c130b; --line: #5a3d22;
+  --ink: #f2e3c6; --ink-2: #d2b98e; --muted: #9c8462;
+  --gold: #c48a3a; --gold-2: #ecc073; --btn-ink: #24160a; --radius: 4px;
+  --display: 'Rye', serif; --caps: 'IM Fell English SC', serif; --text: 'Libre Baskerville', serif;
+  --brand-mark: '⚙';
+  --shelf-back: var(--noise), radial-gradient(ellipse at center, #3d2615, #1c1008);
+  --shelf-side: #7a5320;
+  --shelf-board: radial-gradient(circle at 14px 50%, #f9e2a6 0 1.5px, #6a4515 2.5px, transparent 3.5px) 0 0 / 56px 100%, linear-gradient(180deg, #f3d38a, #c48a3a 35%, #7a5320);
+  --reader-bg: var(--noise), radial-gradient(ellipse at 50% 40%, #40260f, #0d0804 75%);
+  --paper: #ebdab4;
+  --paper-art: var(--noise), radial-gradient(ellipse at center, transparent 50%, rgba(110,70,20,.32));
+  --paper-ink: #2a1d10; --paper-muted: #8a6d48;
+  --accent-ink: #8a4b14; --heading-ink: #5a3510; --ornament-ink: #a06a2a;
+  --frame-inset: 9px; --frame-border: 2px solid rgba(160,106,42,.7); --frame-outline: 1px solid rgba(160,106,42,.4); --frame-outline-offset: -6px;
+  --endpaper: var(--noise), repeating-radial-gradient(circle at 30% 40%, #4a2c17 0 7px, #3a2212 7px 14px);
+  --board: #2e1c0e;
+  --back-bg: var(--noise), radial-gradient(ellipse at 50% 30%, #4a2c17, #160c05 80%);
+  --back-ink: #f0dcb4; --back-accent: #e2b45f;
+  --book-text: 'Libre Baskerville', serif;
+  --book-display: 'Rye', serif;
+  --book-caps: 'IM Fell English SC', serif;
+  --dropcap-font: 'Rye', serif; --dropcap-ink: #8a4b14; --dropcap-size: 2.9em;
+  --line-height: 1.6;
+  --ornament: '⚙'; --chapter-ornament: '⚙'; --sep: '⚙   ⚙   ⚙'; --scene-before: '⚙ '; --scene-after: ' ⚙';
+}
+html[data-theme="steampunk"] h1, html[data-theme="steampunk"] h2 { font-weight: 400; }
+html[data-theme="steampunk"] .work-info h1 { font-size: clamp(32px, 4.5vw, 52px); color: #f3d38a; text-shadow: 0 2px 0 #5a3510; }
+html[data-theme="steampunk"] .btn-gold { background: linear-gradient(180deg, #f3d38a, #c48a3a 55%, #8a5a20); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); }
+.book-root[data-theme="steampunk"] .page-body p.first::first-letter { font-weight: 400; }
+.book-root[data-theme="steampunk"] .ch-title { font-weight: 400; font-size: 1.8em; }
+.book-root[data-theme="steampunk"] .page-body h3.scene { font-family: var(--book-caps); font-style: normal; font-weight: 400; }
+.book-root[data-theme="steampunk"] .tp-title { font-family: var(--book-display); font-weight: 400; }
+.book-root[data-theme="steampunk"] .toc-title, .book-root[data-theme="steampunk"] .front-title, .book-root[data-theme="steampunk"] .end-text { font-weight: 400; }
+.cover-gen[data-theme="steampunk"] { --cv-title-font: 'Rye', serif; }
+.cover-gen[data-theme="steampunk"] .cv-frame { border: 3px solid var(--cv-gold); outline: 1px solid var(--cv-gold); outline-offset: -7px; border-radius: 4px; }
+.cover-gen[data-theme="steampunk"] .cv-deco { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(circle at 4cqw 4cqw, var(--cv-gold) 0 1.6cqw, transparent 1.9cqw), radial-gradient(circle at calc(100% - 4cqw) 4cqw, var(--cv-gold) 0 1.6cqw, transparent 1.9cqw),
+    radial-gradient(circle at 4cqw calc(100% - 4cqw), var(--cv-gold) 0 1.6cqw, transparent 1.9cqw), radial-gradient(circle at calc(100% - 4cqw) calc(100% - 4cqw), var(--cv-gold) 0 1.6cqw, transparent 1.9cqw); }
+.cover-gen[data-theme="steampunk"] .cv-deco::before { content: '⚙'; position: absolute; font-size: 110cqw; line-height: 1; right: -45cqw; bottom: -40cqw; color: var(--cv-gold); opacity: .1; }
+.cover-gen[data-theme="steampunk"] .cv-title { font-weight: 400; }
+
+/* --------------------------------------------------------------------- NOIR */
+[data-theme="noir"] {
+  --blinds: repeating-linear-gradient(-28deg, rgba(255,255,255,.04) 0 22px, transparent 22px 46px);
+  --bg: #0b0b0b;
+  --bg-art: var(--blinds), radial-gradient(ellipse at 70% -10%, rgba(255,255,255,.12), transparent 55%), var(--noise);
+  --bar-bg: rgba(8,8,8,.92); --bar-border: rgba(255,255,255,.15);
+  --panel: #161616; --field: #0f0f0f; --line: #343434;
+  --ink: #f1efe9; --ink-2: #bdbab2; --muted: #85827a;
+  --gold: #c4161c; --gold-2: #e2353b; --btn-ink: #fff; --radius: 0;
+  --display: 'Playfair Display', serif; --caps: 'Bebas Neue', sans-serif; --text: 'Libre Caslon Text', serif;
+  --brand-mark: '◆';
+  --shelf-back: linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.15) 40%, rgba(0,0,0,.55)), var(--blinds), #141414;
+  --shelf-side: #222;
+  --shelf-board: linear-gradient(180deg, #4a4a4a, #222 35%, #0a0a0a);
+  --reader-bg: var(--blinds), radial-gradient(ellipse at 50% 35%, #2c2c2c, #050505 75%);
+  --paper: #f1efe9;
+  --paper-art: var(--noise);
+  --paper-ink: #121212; --paper-muted: #77746c;
+  --accent-ink: #c4161c; --heading-ink: #121212; --ornament-ink: #121212;
+  --endpaper: repeating-linear-gradient(-28deg, #1c1c1c 0 18px, #0c0c0c 18px 36px);
+  --board: #0b0b0b;
+  --back-bg: var(--blinds), radial-gradient(ellipse at 50% 30%, #2c2c2c, #050505 80%);
+  --back-ink: #e8e4da; --back-accent: #e2353b;
+  --book-text: 'Libre Caslon Text', serif;
+  --book-display: 'Playfair Display', serif;
+  --book-caps: 'Bebas Neue', sans-serif;
+  --dropcap-font: 'Playfair Display', serif; --dropcap-ink: #121212; --dropcap-size: 3.3em;
+  --line-height: 1.55;
+  --ornament: '◆'; --chapter-ornament: '◆'; --sep: '◆   ◆   ◆'; --scene-before: ''; --scene-after: '';
+}
+html[data-theme="noir"] .work-info h1 { font-weight: 800; text-transform: uppercase; letter-spacing: .01em; }
+html[data-theme="noir"] .eyebrow, html[data-theme="noir"] .shelf-name { letter-spacing: .25em; font-size: 18px; font-weight: 400; }
+html[data-theme="noir"] .btn { font-family: var(--caps); font-size: 18px; letter-spacing: .1em; }
+.book-root[data-theme="noir"] .page-body p.first::first-letter { font-weight: 800; }
+.book-root[data-theme="noir"] .ch-label { font-size: 1.1em; letter-spacing: .3em; font-weight: 400; }
+.book-root[data-theme="noir"] .ch-title { font-weight: 800; text-transform: uppercase; font-size: 1.6em; letter-spacing: .01em; }
+.book-root[data-theme="noir"] .page-body h3.scene { font-family: var(--book-caps); font-style: normal; font-weight: 400; letter-spacing: .14em; text-align: left; font-size: 1.1em; }
+.book-root[data-theme="noir"] .page-body h3.scene::before { content: '■ '; color: #c4161c; }
+.book-root[data-theme="noir"] .running { font-size: .8em; letter-spacing: .3em; }
+.book-root[data-theme="noir"] .tp-title { font-family: var(--book-display); font-weight: 800; text-transform: uppercase; }
+.book-root[data-theme="noir"] .toc-label { font-size: .85em; }
+.cover-gen[data-theme="noir"] { --cv-title-font: 'Bebas Neue', sans-serif; --cv-text-font: 'Playfair Display', serif; }
+.cover-gen[data-theme="noir"]::before { background: repeating-linear-gradient(-28deg, rgba(255,255,255,.08) 0 3cqw, transparent 3cqw 7cqw); opacity: 1; mix-blend-mode: normal; }
+.cover-gen[data-theme="noir"] .cv-frame { border: 0; outline: 0; }
+.cover-gen[data-theme="noir"] .cv-deco { position: absolute; left: -20%; right: -20%; top: 76%; height: 9cqw; background: #c4161c; transform: rotate(-8deg); box-shadow: 0 2px 10px rgba(0,0,0,.5); }
+.cover-gen[data-theme="noir"] .cv-title { font-weight: 400; font-size: calc(17cqw * var(--cv-size)); line-height: .95; letter-spacing: .03em; }
+.cover-gen[data-theme="noir"] .cv-subtitle { font-style: italic; }
+
+/* ---------------------------------------------------------- Sélecteur de thème */
+.theme-picker small { color: var(--muted); }
+.theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+.theme-card { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--field); cursor: pointer; text-align: left; color: var(--ink); min-width: 0; }
+.theme-card:hover { border-color: var(--gold); }
+.theme-card.active { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+.theme-card strong { font-family: var(--caps); font-size: 13px; font-weight: 400; line-height: 1.15; }
+.theme-card small { font-size: 11px; color: var(--muted); }
+.theme-swatch { width: 100%; height: 34px; border-radius: 4px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); }
+.theme-swatch.auto { display: grid; place-items: center; font-family: var(--caps); font-size: 14px; background: repeating-linear-gradient(90deg, #1d1e15 0 10%, #14251b 10% 20%, #0b0909 20% 30%, #070d1c 30% 40%, #0b0614 40% 50%, #0d0807 50% 60%, #2b141c 60% 70%, #1e140c 70% 80%, #0c0c0c 80% 90%, #241a14 90%); color: #fff; }
+.popover-backdrop { position: fixed; inset: 0; z-index: 40; }
+.theme-popover { position: absolute; top: 58px; right: 12px; width: min(440px, calc(100vw - 24px)); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px; box-shadow: 0 20px 40px rgba(0,0,0,.5); }
+.theme-popover h4 { margin: 0 0 10px; font-family: var(--caps); font-weight: 400; letter-spacing: .1em; }
+.theme-grid.compact { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); }
+
+/* Post-apo : texte tapé à la machine, aligné à gauche ; taches différentes selon les pages. */
+.book-root[data-theme="postapo"] .page-body { text-align: left; }
+.book-root[data-theme="postapo"] .page-body p.split { text-align-last: auto; }
+.book-root[data-theme="postapo"] .page:nth-child(3n+1) { --paper-art: var(--noise), radial-gradient(ellipse at 6% 4%, rgba(110,70,20,.22), transparent 25%), radial-gradient(ellipse at 100% 100%, rgba(80,50,10,.3), transparent 32%), radial-gradient(ellipse at center, transparent 60%, rgba(90,60,20,.22) 100%); }
+.book-root[data-theme="postapo"] .page:nth-child(3n+2) { --paper-art: var(--noise), radial-gradient(circle at 22% 90%, transparent 0 6.4%, rgba(115,70,15,.2) 6.7% 7.5%, transparent 8%), radial-gradient(ellipse at 95% 4%, rgba(110,70,20,.2), transparent 22%), radial-gradient(ellipse at center, transparent 60%, rgba(90,60,20,.22) 100%); }
+
+/* Cadre décoratif des pages (dessiné par-dessus, sans influence sur la mise en page). */
+.book-root .paper { position: relative; }
+.book-root .paper:not(.endpaper)::after { content: ''; position: absolute; inset: var(--frame-inset, 0); border: var(--frame-border, 0 solid transparent); outline: var(--frame-outline, 0 solid transparent); outline-offset: var(--frame-outline-offset, 0); pointer-events: none; }
+.cover-gen[data-theme="fantasy"] .cv-title { font-size: calc(8.2cqw * var(--cv-size)); letter-spacing: 0; }
