@@ -303,7 +303,7 @@ textarea { resize: vertical; }
 .book-root .page-body { flex: 1; min-height: 0; overflow: hidden; text-align: justify; }
 .book-root .page-body > :first-child { margin-top: 0; }
 .book-root .page-body p { margin: 0; text-indent: 1.4em; orphans: 1; widows: 1; }
-.book-root .page-body p.first, .book-root .page-body p.cont, .book-root .page-body h3 + p { text-indent: 0; }
+.book-root .page-body p.first, .book-root .page-body p.cont, .book-root .page-body h3 + p, .book-root .page-body .sep + p { text-indent: 0; }
 .book-root .page-body p.split { text-align-last: justify; }
 .book-root .page-body p.first::first-letter { float: left; font-family: var(--dropcap-font); font-size: var(--dropcap-size); line-height: .82; padding: .06em .08em 0 0; color: var(--dropcap-ink); background: var(--dropcap-bg); font-weight: 600; }
 .book-root .page-body h3.scene { font-family: var(--book-display); font-style: italic; font-weight: 600; font-size: 1.08em; text-align: center; margin: 1.1em 0 .5em; color: var(--heading-ink); letter-spacing: .01em; }

@@ -202,13 +202,12 @@ export async function paginate(content: VolumeContent, meta: BookMeta, opt: Pagi
     startPage(`${c}:0:0`);
     body.appendChild(head);
     opener = true;
-    let firstPara = true;
+    let firstPara = true; // lettrine : uniquement au tout premier paragraphe du chapitre
     for (let b = 0; b < ch.blocks.length; b++) {
       const blk = ch.blocks[b];
       const isP = blk.t === 'p';
       await flow(blockEl(blk, isP && firstPara), `${c}:${b}`);
       if (isP) firstPara = false;
-      if (blk.t === 'h' || blk.t === 'sep') firstPara = true;
     }
     pushPage();
   }
