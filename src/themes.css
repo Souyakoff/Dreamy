@@ -461,7 +461,7 @@ html[data-theme="noir"] .btn { font-family: var(--caps); font-size: 18px; letter
 .book-root[data-theme="postapo"] .page:nth-child(3n+1) { --paper-art: var(--noise), radial-gradient(ellipse at 6% 4%, rgba(110,70,20,.22), transparent 25%), radial-gradient(ellipse at 100% 100%, rgba(80,50,10,.3), transparent 32%), radial-gradient(ellipse at center, transparent 60%, rgba(90,60,20,.22) 100%); }
 .book-root[data-theme="postapo"] .page:nth-child(3n+2) { --paper-art: var(--noise), radial-gradient(circle at 22% 90%, transparent 0 6.4%, rgba(115,70,15,.2) 6.7% 7.5%, transparent 8%), radial-gradient(ellipse at 95% 4%, rgba(110,70,20,.2), transparent 22%), radial-gradient(ellipse at center, transparent 60%, rgba(90,60,20,.22) 100%); }
 
-/* Cadre décoratif des pages (dessiné par-dessus, sans influence sur la mise en page). */
-.book-root .paper { position: relative; }
+/* Cadre décoratif des pages (dessiné par-dessus, sans influence sur la mise en page).
+   Ne jamais changer « position » des pages : page-flip les place lui-même en absolu. */
 .book-root .paper:not(.endpaper)::after { content: ''; position: absolute; inset: var(--frame-inset, 0); border: var(--frame-border, 0 solid transparent); outline: var(--frame-outline, 0 solid transparent); outline-offset: var(--frame-outline-offset, 0); pointer-events: none; }
 .cover-gen[data-theme="fantasy"] .cv-title { font-size: calc(8.2cqw * var(--cv-size)); letter-spacing: 0; }
