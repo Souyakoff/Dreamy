@@ -39,6 +39,13 @@ npm run build
 ADMIN_PASSWORD="un-mot-de-passe" PORT=3000 npm start
 ```
 
+Sous Windows (PowerShell) :
+
+```powershell
+npm run build
+$env:ADMIN_PASSWORD="un-mot-de-passe"; npm start
+```
+
 Variables d'environnement :
 
 | Variable | Rôle |

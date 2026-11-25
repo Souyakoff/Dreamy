@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 import * as store from './store.js';
 
 const PORT = Number(process.env.PORT || 5173);
-const PROD = process.env.NODE_ENV === 'production';
+const PROD = process.env.NODE_ENV === 'production' || process.argv.includes('--prod');
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 
 const app = express();
