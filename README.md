@@ -12,7 +12,11 @@ peut contenir plusieurs **tomes**, et se lit dans un **livre dont on tourne vrai
   - pages qui se tournent en glissant le coin, en cliquant, avec les flèches du clavier ou un balayage tactile ;
   - couverture, page de garde, page de titre, avant-propos, sommaire cliquable avec numéros de page, ouvertures de chapitre avec lettrine, titres courants, quatrième de couverture ;
   - taille du texte réglable (la mise en page est recalculée), son de page, plein écran ;
-  - la page où tu t'es arrêté·e est retenue (dans le navigateur).
+  - la page où tu t'es arrêté·e est retenue (dans le navigateur) ;
+  - **marque-pages** : clique sur le coin supérieur d'une page (un ruban apparaît), sur 🔖 ou appuie sur `M` ;
+    on peut leur ajouter une note, les retrouver dans le panneau ☰ et sur la barre de progression ;
+  - **fermer le livre** à n'importe quelle page avec 📕 : la page est conservée, et la couverture propose
+    « Reprendre » ; si on quitte le lecteur livre fermé, il se rouvre fermé.
 - **Import Word (.docx) et PDF** directement dans le navigateur, avec un aperçu avant d'enregistrer :
   - style *Titre* → titre de l'œuvre, *Sous-titre* → sous-titre ;
   - *Titre 1* → chapitres, *Titre 2* → intertitres de scène ;

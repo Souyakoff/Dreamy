@@ -12,6 +12,9 @@ import { applyDocumentTheme, resolveTheme, themeTitle } from '../themes';
 const progressOf = (id: string): { page: number; total: number } | null => {
   try { const v = JSON.parse(localStorage.getItem(`dreamy:progress:${id}`) || 'null'); return v && v.total ? v : null; } catch { return null; }
 };
+const bookmarkCount = (id: string): number => {
+  try { return (JSON.parse(localStorage.getItem(`dreamy:bookmarks:${id}`) || '[]') as unknown[]).length; } catch { return 0; }
+};
 const fmtWords = (n: number) => `${n.toLocaleString('fr-FR')} mots · ~${Math.max(1, Math.round(n / 230))} min`;
 
 export function WorkPage() {
@@ -93,6 +96,7 @@ export function WorkPage() {
                     <strong>Tome {toRoman(v.number)}{v.title ? ` — ${v.title}` : ''}</strong>
                     <span>{v.chapterCount} chapitre{v.chapterCount > 1 ? 's' : ''} · {fmtWords(v.words)}</span>
                     {v.version && <span>Version {v.version}</span>}
+                    {bookmarkCount(v.id) > 0 && <span>🔖 {bookmarkCount(v.id)} marque-page{bookmarkCount(v.id) > 1 ? 's' : ''}</span>}
                     <span className="vol-admin">
                       <button className="link-btn" onClick={() => guard(() => setEditVol(v))}>modifier</button>
                       <button className="link-btn" onClick={() => guard(() => nav(`/importer?volume=${v.id}`))}>remplacer le texte</button>

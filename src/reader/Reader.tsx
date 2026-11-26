@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PageFlip } from 'page-flip';
-import { paginate, pageForAnchor, splitChapterTitle, type BookMeta, type Layout } from './paginate';
+import { anchorKey, paginate, pageForAnchor, splitChapterTitle, type BookMeta, type Layout } from './paginate';
 import { pageSound } from './sound';
 import type { VolumeContent } from '../types';
 import { THEMES, ensureThemeFonts, themeById } from '../themes';
@@ -29,6 +29,11 @@ const storage = {
   set(k: string, v: unknown) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* ignore */ } },
 };
 
+export interface Bookmark { id: string; anchor: string; chapter: number; excerpt: string; note: string; at: number }
+interface Progress { anchor: string; page: number; total: number; at: number; closed?: boolean }
+
+const plainText = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
+
 interface Props { volumeId: string; content: VolumeContent; meta: BookMeta; theme: string; workTheme: string; onThemeChange: (t: string | null) => void; onClose: () => void }
 
 export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChange, onClose }: Props) {
@@ -43,7 +48,14 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
   const hostRef = useRef<HTMLDivElement>(null);
   const flipRef = useRef<PageFlip | null>(null);
   const progressKey = `dreamy:progress:${volumeId}`;
-  const anchorRef = useRef<string>(storage.get(progressKey, { anchor: 'start' }).anchor);
+  const bookmarksKey = `dreamy:bookmarks:${volumeId}`;
+  const savedProgress = useRef(storage.get<Progress | null>(progressKey, null));
+  const anchorRef = useRef<string>(savedProgress.current?.anchor || 'start');
+  // Le livre se rouvre fermé si on l'avait quitté fermé.
+  const startClosedRef = useRef(Boolean(savedProgress.current?.closed));
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>(() => storage.get(bookmarksKey, []));
+  const [flipping, setFlipping] = useState(false);
+  const [drawerTab, setDrawerTab] = useState<'toc' | 'bm'>('toc');
   const soundRef = useRef(sound);
   soundRef.current = sound;
 
@@ -86,6 +98,25 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
     }).join('');
   }, [layout, dims.spread, meta.workTitle]);
 
+  /** Mémorise la page de lecture. Couverture et pages liminaires ne l'écrasent pas : on peut fermer le livre n'importe où. */
+  const saveProgress = (idx: number) => {
+    if (!layout) return;
+    const p = layout.pages[idx];
+    const prev = storage.get<Progress | null>(progressKey, null);
+    if (idx === 0) {
+      startClosedRef.current = true;
+      storage.set(progressKey, { ...(prev || { anchor: 'start', page: 0, total: layout.pages.length }), closed: true, at: Date.now() });
+      return;
+    }
+    startClosedRef.current = false;
+    if (p && (anchorKey(p.anchor) || p.anchor === 'end')) {
+      anchorRef.current = p.anchor;
+      storage.set(progressKey, { anchor: p.anchor, page: idx, total: layout.pages.length, at: Date.now(), closed: false });
+    } else if (prev?.closed) storage.set(progressKey, { ...prev, closed: false });
+  };
+  const saveProgressRef = useRef(saveProgress);
+  saveProgressRef.current = saveProgress;
+
   // Création du livre animé.
   useEffect(() => {
     const host = hostRef.current;
@@ -96,7 +127,7 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
     el.style.height = `${dims.h}px`;
     el.innerHTML = pagesHtml;
     host.appendChild(el);
-    const start = Math.min(pageForAnchor(layout.pages, anchorRef.current), layout.pages.length - 1);
+    const start = startClosedRef.current ? 0 : Math.min(pageForAnchor(layout.pages, anchorRef.current), layout.pages.length - 1);
     const pf = new PageFlip(el, {
       width: dims.w, height: dims.h, size: 'fixed' as any,
       showCover: true, usePortrait: true, startPage: start,
@@ -109,14 +140,13 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
     pf.on('flip', (e) => {
       const idx = Number(e.data);
       setPage(idx);
-      const p = layout.pages[idx];
-      if (p) {
-        // En double page, la page de droite est la plus avancée : on retient celle de gauche.
-        anchorRef.current = p.anchor;
-        storage.set(progressKey, { anchor: p.anchor, page: idx, total: layout.pages.length, at: Date.now() });
-      }
+      saveProgressRef.current(idx);
     });
-    pf.on('changeState', (e) => { if (e.data === 'flipping' && soundRef.current) pageSound(); });
+    pf.on('changeState', (e) => {
+      if (e.data === 'flipping' && soundRef.current) pageSound();
+      // « fold_corner » = simple coin soulevé au survol : on garde les rubans visibles.
+      setFlipping(e.data === 'flipping' || e.data === 'user_fold');
+    });
     flipRef.current = pf;
 
     const onClick = (ev: MouseEvent) => {
@@ -141,22 +171,26 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
   const goto = useCallback((n: number, animate = true) => {
     const pf = flipRef.current;
     if (!pf) return;
-    if (animate) pf.flip(n); else { pf.turnToPage(n); setPage(n); const p = layout?.pages[n]; if (p) { anchorRef.current = p.anchor; storage.set(progressKey, { anchor: p.anchor, page: n, total: layout!.pages.length, at: Date.now() }); } }
-  }, [layout, progressKey]);
+    if (animate) pf.flip(n); else { pf.turnToPage(n); setPage(n); saveProgressRef.current(n); }
+  }, []);
+
+  const closeBook = () => { if (page !== 0) flipRef.current?.flip(0); };
 
   // Clavier
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement)?.tagName === 'INPUT') return;
+      const typing = (e.target as HTMLElement)?.tagName === 'INPUT';
+      if (e.key === 'Escape') { if (tocOpen) setTocOpen(false); else if (themeOpen) setThemeOpen(false); else if (!typing) onClose(); return; }
+      if (typing) return;
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); flipRef.current?.flipNext(); }
       else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); flipRef.current?.flipPrev(); }
       else if (e.key === 'Home') goto(0);
       else if (e.key === 'End' && layout) goto(layout.pages.length - 1);
-      else if (e.key === 'Escape') { if (tocOpen) setTocOpen(false); else onClose(); }
+      else if (e.key === 'm' || e.key === 'M') toggleCurrentRef.current();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [goto, layout, tocOpen, onClose]);
+  }, [goto, layout, tocOpen, themeOpen, onClose]);
 
   useEffect(() => { if (themeOpen) THEMES.forEach((t) => ensureThemeFonts(t.id)); }, [themeOpen]);
 
@@ -171,6 +205,35 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
   // Position du livre : fermé, la couverture est centrée ; ouvert, la double page est centrée.
   const shift = dims.spread && layout ? (page === 0 ? -dims.w / 2 : page >= total - 1 ? dims.w / 2 : 0) : 0;
 
+  // ---- Marque-pages ----
+  const saveBookmarks = (list: Bookmark[]) => { setBookmarks(list); storage.set(bookmarksKey, list); };
+  const bookmarkPage = (b: Bookmark) => (layout ? pageForAnchor(layout.pages, b.anchor) : -1);
+  const canBookmark = (idx: number) => Boolean(layout && layout.pages[idx] && layout.pages[idx].kind === 'text' && anchorKey(layout.pages[idx].anchor));
+  const bookmarkAt = (idx: number) => bookmarks.find((b) => bookmarkPage(b) === idx);
+  const toggleBookmark = (idx: number) => {
+    if (!layout || !canBookmark(idx)) return;
+    const existing = bookmarkAt(idx);
+    if (existing) return saveBookmarks(bookmarks.filter((b) => b !== existing));
+    const pg = layout.pages[idx];
+    const excerpt = plainText(pg.body.replace(/<header class="chapter-opener">[\s\S]*?<\/header>/, '').replace(/<h3[^>]*>[\s\S]*?<\/h3>/g, ' ')).slice(0, 110);
+    saveBookmarks([...bookmarks, { id: Math.random().toString(36).slice(2, 10), anchor: pg.anchor, chapter: pg.chapter, excerpt, note: '', at: Date.now() }]
+      .sort((a, b) => bookmarkPage(a) - bookmarkPage(b)));
+  };
+  // Pages visibles (en double page, l'index de page-flip désigne la page de gauche).
+  const visible: { idx: number; side: 'left' | 'right' }[] = !layout ? [] : !dims.spread ? [{ idx: page, side: 'right' }]
+    : page === 0 ? [{ idx: 0, side: 'right' }]
+    : (() => { const l = page % 2 === 1 ? page : page - 1; return [{ idx: l, side: 'left' as const }, ...(l + 1 < total ? [{ idx: l + 1, side: 'right' as const }] : [])]; })();
+  const visibleMarked = visible.filter((v) => bookmarkAt(v.idx));
+  const toggleCurrent = () => {
+    if (visibleMarked.length) return saveBookmarks(bookmarks.filter((b) => !visibleMarked.some((v) => bookmarkPage(b) === v.idx)));
+    const target = visible.find((v) => canBookmark(v.idx));
+    if (target) toggleBookmark(target.idx);
+  };
+  const toggleCurrentRef = useRef(toggleCurrent);
+  toggleCurrentRef.current = toggleCurrent;
+  const resumePage = layout ? pageForAnchor(layout.pages, anchorRef.current) : 0;
+  const isClosed = page === 0 && Boolean(layout);
+
   return (
     <div className="reader">
       <header className="reader-bar">
@@ -180,7 +243,9 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
           <span>{meta.volumeNumber ? `Tome ${meta.volumeNumber}` : ''}{meta.volumeTitle ? ` · ${meta.volumeTitle}` : ''}</span>
         </div>
         <div className="reader-tools">
-          <button className="icon-btn" onClick={() => setTocOpen(true)} title="Sommaire">☰</button>
+          <button className="icon-btn" onClick={() => { setDrawerTab('toc'); setTocOpen(true); }} title="Sommaire et marque-pages">☰</button>
+          <button className={`icon-btn ${visibleMarked.length ? 'active' : ''}`} onClick={toggleCurrent} disabled={!visible.some((v) => canBookmark(v.idx))} title={visibleMarked.length ? 'Retirer le marque-page (M)' : 'Ajouter un marque-page (M)'}>🔖</button>
+          <button className="icon-btn" onClick={closeBook} disabled={isClosed} title="Fermer le livre">📕</button>
           <button className="icon-btn" onClick={() => setThemeOpen(!themeOpen)} title="Thème">🎨</button>
           <button className="icon-btn" onClick={() => changeScale(-0.1)} title="Texte plus petit">A−</button>
           <button className="icon-btn" onClick={() => changeScale(0.1)} title="Texte plus grand">A+</button>
@@ -194,13 +259,32 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
         <div className="book-root" data-theme={theme} style={{ transform: `translateX(${shift}px)` }}>
           <div ref={hostRef} className="flip-host" />
           {!layout && <div className="paginating">Mise en page du livre…</div>}
+          {layout && !flipping && visible.map((v) => canBookmark(v.idx) && (
+            <button key={v.idx} className={`ribbon ${v.side} ${bookmarkAt(v.idx) ? 'on' : ''}`}
+              style={{ left: (dims.spread && v.side === 'right' ? dims.w : 0) + (v.side === 'right' ? dims.w * 0.86 : dims.w * 0.08) }}
+              onClick={() => toggleBookmark(v.idx)}
+              onMouseMove={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()} title={bookmarkAt(v.idx) ? 'Retirer le marque-page' : 'Poser un marque-page ici'} aria-label="Marque-page" />
+          ))}
+          {isClosed && !flipping && (
+            <div className="cover-actions" onMouseDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()} onMouseMove={(e) => e.stopPropagation()} style={{ left: dims.spread ? dims.w : 0, width: dims.w }}>
+              {resumePage > 2 && <button className="btn btn-gold" onClick={() => goto(resumePage)}>Reprendre · p. {resumePage}</button>}
+              <button className="btn" onClick={() => flipRef.current?.flipNext()}>{resumePage > 2 ? 'Depuis le début' : 'Ouvrir le livre'}</button>
+              {bookmarks.length > 0 && <button className="link-btn" onClick={() => { setDrawerTab('bm'); setTocOpen(true); }}>🔖 {bookmarks.length} marque-page{bookmarks.length > 1 ? 's' : ''}</button>}
+            </div>
+          )}
         </div>
         {dims.spread && <button className="nav-arrow next" onClick={() => flipRef.current?.flipNext()} disabled={page >= total - 1} aria-label="Page suivante">›</button>}
       </div>
 
       <footer className="reader-foot">
-        <span className="foot-chapter">{currentChapter >= 0 && layout ? splitChapterTitle(layout.chapterTitles[currentChapter], currentChapter).title : meta.workTitle}</span>
-        <input type="range" min={0} max={Math.max(0, total - 1)} value={page} onChange={(e) => goto(Number(e.target.value), false)} aria-label="Aller à la page" />
+        <span className="foot-chapter">{isClosed ? 'Livre fermé' : currentChapter >= 0 && layout ? splitChapterTitle(layout.chapterTitles[currentChapter], currentChapter).title : meta.workTitle}</span>
+        <div className="slider">
+          <input type="range" min={0} max={Math.max(0, total - 1)} value={page} onChange={(e) => goto(Number(e.target.value), false)} aria-label="Aller à la page" />
+          {total > 1 && bookmarks.map((b) => {
+            const bp = bookmarkPage(b);
+            return <button key={b.id} className="slider-tick" style={{ left: `calc(8px + (100% - 16px) * ${bp / (total - 1)})` }} title={`Marque-page · p. ${bp}`} onClick={() => goto(bp, Math.abs(bp - page) < 6)} />;
+          })}
+        </div>
         <span className="foot-page">{total ? `${page} / ${total - 1}` : ''}</span>
       </footer>
 
@@ -224,8 +308,33 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
       {tocOpen && layout && (
         <div className="drawer-backdrop" onClick={() => setTocOpen(false)}>
           <aside className="drawer" onClick={(e) => e.stopPropagation()}>
-            <h3>Sommaire</h3>
-            <ol>
+            <div className="drawer-tabs">
+              <button className={drawerTab === 'toc' ? 'active' : ''} onClick={() => setDrawerTab('toc')}>Sommaire</button>
+              <button className={drawerTab === 'bm' ? 'active' : ''} onClick={() => setDrawerTab('bm')}>Marque-pages{bookmarks.length ? ` (${bookmarks.length})` : ''}</button>
+            </div>
+            {drawerTab === 'bm' && (
+              <div className="bm-list">
+                {!bookmarks.length && <p className="muted bm-empty">Aucun marque-page pour l’instant. Clique sur le coin supérieur d’une page, sur 🔖, ou appuie sur <kbd>M</kbd> pour en poser un.</p>}
+                {bookmarks.map((b) => {
+                  const bp = bookmarkPage(b);
+                  const ch = b.chapter >= 0 && layout.chapterTitles[b.chapter] ? splitChapterTitle(layout.chapterTitles[b.chapter], b.chapter) : null;
+                  return (
+                    <div className="bm-item" key={b.id}>
+                      <button className="bm-go" onClick={() => { setTocOpen(false); goto(bp, Math.abs(bp - page) < 6); }}>
+                        <small>{ch ? ch.label || ch.title : ''} · p. {bp}</small>
+                        <span>{b.note || `« ${b.excerpt}… »`}</span>
+                        {b.note && <em>« {b.excerpt}… »</em>}
+                      </button>
+                      <div className="bm-actions">
+                        <input placeholder="Ajouter une note…" value={b.note} onChange={(e) => saveBookmarks(bookmarks.map((x) => (x.id === b.id ? { ...x, note: e.target.value } : x)))} />
+                        <button className="icon-btn" title="Supprimer" onClick={() => saveBookmarks(bookmarks.filter((x) => x.id !== b.id))}>✕</button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {drawerTab === 'toc' && <ol>
               {layout.chapterTitles.map((t, i) => {
                 const { label, title } = splitChapterTitle(t, i);
                 return (
@@ -236,7 +345,7 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
                   </li>
                 );
               })}
-            </ol>
+            </ol>}
           </aside>
         </div>
       )}

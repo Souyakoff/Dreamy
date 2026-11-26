@@ -378,3 +378,60 @@ textarea { resize: vertical; }
 .cv-deco { position: absolute; pointer-events: none; }
 .cv-title, .cv-subtitle { max-width: 100%; }
 .cv-fandom { padding: 0 9%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- Marque-pages ---------- */
+.icon-btn:disabled { opacity: .3; cursor: default; }
+.icon-btn.active { background: color-mix(in srgb, var(--gold) 22%, transparent); border-color: var(--gold); }
+.ribbon {
+  position: absolute; top: -6px; width: 26px; height: 58px; padding: 0; border: 0; cursor: pointer; z-index: 6;
+  background: linear-gradient(90deg, rgba(0,0,0,.18), transparent 30%, rgba(255,255,255,.18) 50%, transparent 70%, rgba(0,0,0,.2)), var(--ribbon, #a3222a);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,.35));
+  opacity: 0; transform: translateY(-14px); transition: opacity .2s, transform .25s cubic-bezier(.3,.7,.3,1.4), height .25s;
+}
+.ribbon:hover { opacity: .55; transform: translateY(0); }
+.ribbon.on { opacity: 1; transform: translateY(0); height: 84px; }
+.ribbon.on:hover { opacity: .85; }
+.ribbon::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 8px; background: rgba(0,0,0,.25); }
+[data-theme="postapo"] { --ribbon: #c49a1d; }
+[data-theme="fantasy"] { --ribbon: #1f5a3a; }
+[data-theme="scifi"] { --ribbon: #1593c6; }
+[data-theme="cyberpunk"] { --ribbon: #ff2a6d; }
+[data-theme="romance"] { --ribbon: #d06985; }
+[data-theme="steampunk"] { --ribbon: #8a4b14; }
+[data-theme="noir"] { --ribbon: #c4161c; }
+@media (hover: none) { .ribbon:not(.on) { opacity: .28; transform: translateY(-6px); } }
+
+.cover-actions {
+  position: absolute; bottom: 7%; z-index: 6; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 12%;
+  animation: fadein .4s ease-out;
+}
+.cover-actions .btn { width: 100%; justify-content: center; box-shadow: 0 6px 18px rgba(0,0,0,.45); }
+.cover-actions .btn:not(.btn-gold) { background: rgba(0,0,0,.55); backdrop-filter: blur(3px); color: #f1e6d2; }
+.cover-actions .link-btn { color: #f3dca7; text-shadow: 0 1px 3px #000; font-size: 15px; }
+@keyframes fadein { from { opacity: 0; transform: translateY(6px); } }
+
+.slider { flex: 1; position: relative; display: flex; align-items: center; }
+.slider input { width: 100%; }
+.slider-tick { position: absolute; top: 50%; width: 8px; height: 16px; margin: -16px 0 0 -4px; padding: 0; border: 0; cursor: pointer;
+  background: var(--ribbon, #a3222a); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%); }
+.slider-tick:hover { transform: scale(1.3); }
+
+.drawer-tabs { display: flex; gap: 4px; margin-bottom: 14px; border-bottom: 1px solid var(--line); }
+.drawer-tabs button { flex: 1; background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 4px; cursor: pointer; font-family: var(--caps); letter-spacing: .08em; font-size: 14px; color: var(--ink-2); display: block; text-align: center; border-radius: 0; }
+.drawer-tabs button.active { color: var(--gold-2); border-bottom-color: var(--gold); }
+.drawer-tabs button:hover { background: none; color: var(--ink); }
+.bm-list { display: flex; flex-direction: column; gap: 10px; }
+.bm-empty { font-size: 15px; line-height: 1.5; }
+.bm-empty kbd { border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; font-family: inherit; }
+.bm-item { border: 1px solid var(--line); border-left: 4px solid var(--ribbon, #a3222a); border-radius: 8px; padding: 6px; background: rgba(0,0,0,.15); }
+.drawer .bm-go { display: flex; flex-direction: column; gap: 2px; padding: 4px 6px; }
+.drawer .bm-go small { font-family: var(--caps); font-size: 11px; letter-spacing: .12em; color: var(--gold); grid-column: auto; }
+.drawer .bm-go span { font-size: 16px; line-height: 1.3; }
+.drawer .bm-go em { font-size: 13px; color: var(--muted); font-style: italic; align-self: auto; }
+.bm-actions { display: flex; gap: 6px; align-items: center; padding: 2px 4px 2px 6px; }
+.bm-actions input { padding: 4px 8px !important; font-size: 14px !important; }
+.bm-actions .icon-btn { min-width: 30px; height: 30px; font-size: 13px; flex: none; }
+.bm-actions input { flex: 1; min-width: 0; width: auto !important; }
+.drawer .bm-actions .icon-btn { width: auto; display: inline-flex; align-items: center; justify-content: center; }
+.cover-actions .btn { white-space: nowrap; }
