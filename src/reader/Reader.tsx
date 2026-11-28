@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PageFlip } from 'page-flip';
 import { anchorKey, paginate, pageForAnchor, splitChapterTitle, type BookMeta, type Layout } from './paginate';
 import { pageSound } from './sound';
+import { pagesToHtml } from './book';
+import { ExportDialog } from '../components/ExportDialog';
 import type { VolumeContent } from '../types';
 import { THEMES, ensureThemeFonts, themeById } from '../themes';
 
@@ -42,6 +44,7 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
   const textScale = themeById(theme).textScale;
   const [dims, setDims] = useState(() => computeDims(scale, textScale));
   const [themeOpen, setThemeOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
   const [layout, setLayout] = useState<Layout | null>(null);
   const [page, setPage] = useState(0);
   const [tocOpen, setTocOpen] = useState(false);
@@ -82,21 +85,7 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
     return () => { cancelled = true; };
   }, [content, meta, dims, theme]);
 
-  const pagesHtml = useMemo(() => {
-    if (!layout) return '';
-    return layout.pages.map((p, i) => {
-      const hard = p.hard ? 'hard' : 'soft';
-      if (p.kind === 'cover' || p.kind === 'back') return `<div class="page cover-page ${p.kind}" data-density="hard">${p.body}</div>`;
-      const left = dims.spread ? i % 2 === 1 : false;
-      const chTitle = p.chapter >= 0 ? splitChapterTitle(layout.chapterTitles[p.chapter], p.chapter).title : '';
-      const running = p.kind === 'text' && !p.opener ? (left || !chTitle ? meta.workTitle : chTitle) : '';
-      const folio = p.kind === 'text' || p.kind === 'front' || p.kind === 'toc' ? String(i) : '';
-      const side = left ? 'left' : 'right';
-      return `<div class="page paper ${p.kind}-page ${side} ${p.endpaper ? 'endpaper' : ''}" data-density="${hard}">
-        <div class="page-inner"><div class="running">${running.replace(/</g, '&lt;') || '&nbsp;'}</div><div class="page-body">${p.body}</div><div class="folio">${folio}</div></div>
-      </div>`;
-    }).join('');
-  }, [layout, dims.spread, meta.workTitle]);
+  const pagesHtml = useMemo(() => (layout ? pagesToHtml(layout, meta, dims.spread) : ''), [layout, dims.spread, meta]);
 
   /** Mémorise la page de lecture. Couverture et pages liminaires ne l'écrasent pas : on peut fermer le livre n'importe où. */
   const saveProgress = (idx: number) => {
@@ -179,7 +168,8 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
   // Clavier
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const typing = (e.target as HTMLElement)?.tagName === 'INPUT';
+      if (exportOpen) { if (e.key === 'Escape') setExportOpen(false); return; }
+      const typing = ['INPUT', 'SELECT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName);
       if (e.key === 'Escape') { if (tocOpen) setTocOpen(false); else if (themeOpen) setThemeOpen(false); else if (!typing) onClose(); return; }
       if (typing) return;
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); flipRef.current?.flipNext(); }
@@ -190,7 +180,7 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [goto, layout, tocOpen, themeOpen, onClose]);
+  }, [goto, layout, tocOpen, themeOpen, exportOpen, onClose]);
 
   useEffect(() => { if (themeOpen) THEMES.forEach((t) => ensureThemeFonts(t.id)); }, [themeOpen]);
 
@@ -250,6 +240,7 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
           <button className="icon-btn" onClick={() => changeScale(-0.1)} title="Texte plus petit">A−</button>
           <button className="icon-btn" onClick={() => changeScale(0.1)} title="Texte plus grand">A+</button>
           <button className="icon-btn" onClick={toggleSound} title="Son des pages">{sound ? '🔊' : '🔈'}</button>
+          <button className="icon-btn hide-sm" onClick={() => setExportOpen(true)} title="Exporter ce tome en PDF">⬇</button>
           <button className="icon-btn hide-sm" onClick={() => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen())} title="Plein écran">⛶</button>
         </div>
       </header>
@@ -287,6 +278,8 @@ export function Reader({ volumeId, content, meta, theme, workTheme, onThemeChang
         </div>
         <span className="foot-page">{total ? `${page} / ${total - 1}` : ''}</span>
       </footer>
+
+      {exportOpen && <ExportDialog kind="tome" id={volumeId} title={`${meta.workTitle}${meta.volumeNumber ? ` — Tome ${meta.volumeNumber}` : ''}`} theme={theme} onClose={() => setExportOpen(false)} />}
 
       {themeOpen && (
         <div className="popover-backdrop" onClick={() => setThemeOpen(false)}>

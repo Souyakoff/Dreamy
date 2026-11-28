@@ -435,3 +435,28 @@ textarea { resize: vertical; }
 .bm-actions input { flex: 1; min-width: 0; width: auto !important; }
 .drawer .bm-actions .icon-btn { width: auto; display: inline-flex; align-items: center; justify-content: center; }
 .cover-actions .btn { white-space: nowrap; }
+
+/* ---------- Impression / PDF ---------- */
+body.print-mode { background: #555; overflow: auto; }
+.print-book { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 16px 0 40px; }
+.print-book .page.print-page { position: relative; width: var(--print-w); height: var(--print-h); overflow: hidden; flex: none; box-shadow: 0 4px 18px rgba(0,0,0,.4); break-after: page; page-break-after: always; }
+.print-book .page.print-page:last-child { break-after: auto; page-break-after: auto; }
+.print-toolbar { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; justify-content: center; padding: 10px 16px; background: rgba(20,14,10,.94); color: #f1e6d2; font-family: 'EB Garamond', serif; text-align: center; }
+.print-toolbar small { flex-basis: 100%; color: #b9a98d; }
+/* Version économie d'encre : papier blanc, encre foncée, sans textures. */
+.print-book.ink-saver .paper:not(.endpaper) { --paper: #fff; --paper-art: none; --paper-ink: #141414; --paper-muted: #666; --heading-ink: #2a2a2a; --gutter-shade: transparent; --ornament-ink: #555; }
+.print-book.ink-saver .paper.endpaper { --endpaper: #fff; }
+.print-book.ink-saver .ch-title, .print-book.ink-saver .tp-title, .print-book.ink-saver .page-body p.first::first-letter { text-shadow: none !important; }
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  html, body, body.print-mode { background: none !important; margin: 0; padding: 0; overflow: visible; }
+  .print-toolbar { display: none !important; }
+  .print-book { display: block; padding: 0; gap: 0; }
+  .print-book .page.print-page { box-shadow: none; margin: 0; }
+}
+.export-modal { width: min(560px, 100%); }
+.export-modal > .muted { margin-top: -6px; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.seg button { flex: 1 1 150px; padding: 8px 10px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--field); color: var(--ink); cursor: pointer; font-size: 15px; }
+.seg button.active { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+.export-wait { font-size: 14px; margin: 10px 0 0; text-align: right; }

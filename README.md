@@ -24,6 +24,11 @@ peut contenir plusieurs **tomes**, et se lit dans un **livre dont on tourne vrai
   - le sommaire du document est ignoré (le livre génère le sien) ;
   - le texte avant le premier chapitre devient l'avant-propos ;
   - pour un PDF, titres et paragraphes sont reconstitués à partir des tailles de police ; en-têtes et pieds de page répétés sont retirés.
+- **Export PDF** d'un tome ou d'une œuvre entière (bouton « ⬇ PDF » sur la fiche, « PDF » sous un tome, ⬇ dans le lecteur) :
+  formats A5 (livre), Poche ou A4, au choix du thème, avec une option « économie d'encre » (pages blanches) pour imprimer.
+  Le PDF reprend exactement la mise en page du lecteur (couverture, sommaire numéroté, chapitres, quatrième de couverture),
+  avec du vrai texte sélectionnable. Il est généré par Microsoft Edge ou Google Chrome, déjà présents sur la plupart des PC,
+  sans rien télécharger de plus ; sinon, le site ouvre l'impression du navigateur (« Enregistrer au format PDF »).
 - **Mise à jour d'un tome** : réimporter une nouvelle version d'un tome existant remplace son texte en gardant sa couverture.
 - **Couvertures** : image importée (œuvre et/ou tome) ou, à défaut, une couverture générée automatiquement dans le style du thème.
 - **10 thèmes visuels** : Classique, Post-apocalyptique, Fantasy, Dark fantasy, Science-fiction, Cyberpunk, Horreur, Romance, Steampunk, Noir/Polar.
@@ -63,8 +68,10 @@ Variables d'environnement :
 | `ADMIN_PASSWORD` | Mot de passe demandé pour importer, modifier ou supprimer. **Sans lui, tout le monde peut modifier** : à définir en ligne. |
 | `PORT` | Port HTTP (5173 par défaut). |
 | `DATA_DIR` | Dossier des données (`./data` par défaut). |
+| `CHROME_PATH` | Chemin d'un Chrome/Chromium pour l'export PDF, si Edge ou Chrome ne sont pas trouvés automatiquement (serveur Linux…). |
 
-Les données sont des fichiers simples dans `data/` : `db.json` (œuvres et tomes), `volumes/*.json` (texte), `covers/*` (images).
+Les données sont des fichiers simples dans `data/` : `db.json` (œuvres et tomes), `volumes/*.json` (texte), `covers/*` (images),
+`exports/*` (PDF déjà générés, gardés en cache ; ce dossier peut être vidé sans risque).
 Pour sauvegarder la bibliothèque, il suffit de copier ce dossier. Il est exclu de git.
 
 ## Bien préparer un manuscrit Word

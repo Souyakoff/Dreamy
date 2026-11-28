@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import * as store from './store.js';
+import { renderPdf } from './pdf.js';
 
 const PORT = Number(process.env.PORT || 5173);
 const PROD = process.env.NODE_ENV === 'production' || process.argv.includes('--prod');
@@ -35,6 +36,33 @@ api.post('/works/:id/volumes', admin, wrap((req) => store.createVolume(req.param
 api.get('/volumes/:id', wrap((req) => store.getVolume(req.params.id)));
 api.patch('/volumes/:id', admin, wrap((req) => store.updateVolume(req.params.id, req.body)));
 api.delete('/volumes/:id', admin, wrap((req) => store.deleteVolume(req.params.id) && { ok: true }));
+
+// Export PDF d'un tome ou d'une œuvre entière.
+const slug = (s) => String(s || 'livre').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80) || 'livre';
+api.get('/export/:kind/:id.pdf', async (req, res, next) => {
+  try {
+    const { kind, id } = req.params;
+    let name, version;
+    if (kind === 'tome') {
+      const v = store.getVolume(id);
+      if (!v) return res.status(404).json({ error: 'Tome introuvable' });
+      name = `${slug(v.work.title)}-Tome-${v.number}`;
+      version = `${v.updatedAt}${v.work.updatedAt}`;
+    } else if (kind === 'oeuvre') {
+      const w = store.getWork(id);
+      if (!w) return res.status(404).json({ error: 'Œuvre introuvable' });
+      if (!w.volumes.length) return res.status(400).json({ error: 'Cette œuvre n’a pas encore de tome.' });
+      name = slug(w.title);
+      version = `${w.updatedAt}${w.volumes.map((v) => v.updatedAt).join('')}`;
+    } else return res.status(404).json({ error: 'Type inconnu' });
+    const file = await renderPdf({
+      kind: kind === 'tome' ? 'volume' : 'work', id, version,
+      size: String(req.query.size || 'a5'), theme: String(req.query.theme || ''), ink: req.query.ink === '1',
+      baseUrl: `http://127.0.0.1:${PORT}`,
+    });
+    res.download(file, `${name}.pdf`);
+  } catch (e) { next(e); }
+});
 app.use('/api', api);
 app.use('/api', (req, res) => res.status(404).json({ error: 'Route inconnue' }));
 app.use('/covers', express.static(store.COVER_DIR, { maxAge: '30d', immutable: true }));

@@ -6,6 +6,7 @@ import type { VolumeMeta, Work } from '../types';
 import { Book } from '../components/Book';
 import { CoverPicker } from '../components/CoverPicker';
 import { WorkEditDialog } from '../components/WorkForm';
+import { ExportDialog } from '../components/ExportDialog';
 import { toRoman } from '../import/structure';
 import { applyDocumentTheme, resolveTheme, themeTitle } from '../themes';
 
@@ -25,6 +26,7 @@ export function WorkPage() {
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
   const [editVol, setEditVol] = useState<VolumeMeta | null>(null);
+  const [exporting, setExporting] = useState<{ kind: 'tome' | 'oeuvre'; id: string; title: string } | null>(null);
 
   const load = useCallback(() => api.work(id).then(setWork).catch((e) => setError(e.message)), [id]);
   useEffect(() => { load(); }, [load]);
@@ -69,6 +71,7 @@ export function WorkPage() {
             {vols.length > 0 && (resume
               ? <Link className="btn btn-gold" to={`/lire/${resume.v.id}`}>Reprendre le tome {toRoman(resume.v.number)} · p. {resume.p!.page}</Link>
               : <Link className="btn btn-gold" to={`/lire/${vols[0].id}`}>Commencer la lecture</Link>)}
+            {vols.length > 0 && <button className="btn" onClick={() => setExporting({ kind: 'oeuvre', id: work.id, title: `${work.title} — œuvre complète (${vols.length} tome${vols.length > 1 ? 's' : ''})` })}>⬇ PDF{vols.length > 1 ? ' de l’œuvre' : ''}</button>}
             <button className="btn" onClick={() => guard(() => nav(`/importer?work=${work.id}`))}>+ Ajouter un tome</button>
             <button className="btn" onClick={() => guard(() => setEditing(true))}>Modifier</button>
             <button className="btn btn-danger" onClick={() => guard(async () => {
@@ -98,6 +101,7 @@ export function WorkPage() {
                     {v.version && <span>Version {v.version}</span>}
                     {bookmarkCount(v.id) > 0 && <span>🔖 {bookmarkCount(v.id)} marque-page{bookmarkCount(v.id) > 1 ? 's' : ''}</span>}
                     <span className="vol-admin">
+                      <button className="link-btn" onClick={() => setExporting({ kind: 'tome', id: v.id, title: `${work.title} — Tome ${toRoman(v.number)}` })}>PDF</button>
                       <button className="link-btn" onClick={() => guard(() => setEditVol(v))}>modifier</button>
                       <button className="link-btn" onClick={() => guard(() => nav(`/importer?volume=${v.id}`))}>remplacer le texte</button>
                     </span>
@@ -110,6 +114,7 @@ export function WorkPage() {
         </div>
       </section>
 
+      {exporting && <ExportDialog {...exporting} theme={theme!} onClose={() => setExporting(null)} />}
       {editing && <WorkEditDialog work={work} onClose={() => setEditing(false)} onSave={async (p) => { await api.updateWork(work.id, p); setEditing(false); load(); }} />}
       {editVol && <VolumeEditDialog vol={editVol} onClose={() => setEditVol(null)} onSaved={() => { setEditVol(null); load(); }} isAdmin={isAdmin} />}
     </div>

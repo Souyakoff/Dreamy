@@ -4,11 +4,12 @@ import { Library } from './pages/Library';
 import { WorkPage } from './pages/WorkPage';
 import { ImportPage } from './pages/ImportPage';
 import { ReaderPage } from './pages/ReaderPage';
+import { PrintPage } from './pages/PrintPage';
 
 function Shell({ children }: { children: React.ReactNode }) {
   const { isAdmin, authRequired, login, logout } = useAdmin();
   const loc = useLocation();
-  if (loc.pathname.startsWith('/lire/')) return <>{children}</>;
+  if (loc.pathname.startsWith('/lire/') || loc.pathname.startsWith('/imprimer/')) return <>{children}</>;
   return (
     <div className="shell">
       <header className="topbar">
@@ -35,6 +36,7 @@ export function App() {
             <Route path="/oeuvre/:id" element={<WorkPage />} />
             <Route path="/importer" element={<ImportPage />} />
             <Route path="/lire/:id" element={<ReaderPage />} />
+            <Route path="/imprimer/:kind/:id" element={<PrintPage />} />
             <Route path="*" element={<div className="empty"><h2>Page introuvable</h2><Link to="/">Retour à la bibliothèque</Link></div>} />
           </Routes>
         </Shell>
